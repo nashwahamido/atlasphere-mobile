@@ -1,4 +1,5 @@
 import * as Linking from 'expo-linking';
+import { router } from 'expo-router';
 import { Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -39,6 +40,12 @@ export default function Home() {
           <Button title="Open my trips on the web" onPress={() => Linking.openURL(API_URL + '/groups')} />
         </View>
 
+        <View style={[styles.card, styles.friendsCard]}>
+          <Text style={styles.cardTitle}>Travel with friends</Text>
+          <Text style={styles.cardText}>Add the people you travel with and see where they’ve been.</Text>
+          <Button title="Find friends" variant="secondary" onPress={() => router.push('/friends')} />
+        </View>
+
         <Button title="Log out" variant="secondary" onPress={signOut} style={styles.logout} />
       </ScrollView>
     </SafeAreaView>
@@ -58,5 +65,6 @@ const styles = StyleSheet.create({
   card: { backgroundColor: colors.field, borderRadius: radius.card, padding: 20, gap: 12, borderWidth: 1, borderColor: colors.border },
   cardTitle: { fontSize: 18, fontWeight: '700', color: colors.navy },
   cardText: { fontSize: 15, lineHeight: 22, color: colors.textMuted },
+  friendsCard: { marginTop: 14 },
   logout: { marginTop: 24 },
 });

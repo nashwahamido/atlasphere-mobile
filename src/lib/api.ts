@@ -3,6 +3,21 @@ import { API_URL } from './config';
 export type User = { id: number; username: string; email: string; profilePictureUrl: string };
 export type AuthResult = { token: string; user: User; isNewUser?: boolean };
 
+export type Relationship = 'none' | 'outgoing' | 'incoming' | 'friends' | 'self';
+export type Person = { id: number; username: string; profilePictureUrl: string; relationship?: Relationship };
+export type Country = { code: string; name: string };
+export type Profile = Person & {
+  relationship: Relationship;
+  friendCount: number;
+  canSeeDetails: boolean;
+  visitedCountries?: Country[];
+  visitedCities?: string[];
+  planningCountries?: Country[];
+  tripCount?: number;
+};
+export type FriendsData = { friends: Person[]; incoming: Person[]; outgoing: Person[] };
+export type FriendAction = 'request' | 'accept' | 'decline' | 'cancel' | 'remove';
+
 export class ApiError extends Error {
   status: number;
   data: Record<string, unknown> | null;
@@ -59,6 +74,13 @@ export const api = {
   forgotPassword: (email: string) =>
     request<{ message: string }>('/auth/forgot-password', { method: 'POST', body: { email: email.trim() } }),
   me: (token: string) => request<{ user: User }>('/me', { token }),
+
+  friends: (token: string) => request<FriendsData>('/friends', { token }),
+  searchPeople: (token: string, q: string) =>
+    request<{ results: Person[] }>('/people/search?q=' + encodeURIComponent(q.trim()), { token }),
+  person: (token: string, id: number | string) => request<{ person: Profile }>('/people/' + encodeURIComponent(String(id)), { token }),
+  friendAction: (token: string, id: number | string, action: FriendAction) =>
+    request<{ relationship: Relationship }>('/people/' + encodeURIComponent(String(id)) + '/' + action, { method: 'POST', token }),
 };
 
 // Profile pictures are stored as site-relative paths (/uploads/...).
