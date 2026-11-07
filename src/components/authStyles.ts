@@ -10,4 +10,6 @@ export const authStyles = StyleSheet.create({
   link: { color: colors.blue, fontWeight: '600', fontSize: 15 },
   footer: { flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', marginTop: 24 },
   footerText: { color: colors.textMuted, fontSize: 15 },
+  legal: { color: colors.textMuted, fontSize: 13, lineHeight: 19, textAlign: 'center', marginTop: 14 },
+  legalLink: { color: colors.blue, fontWeight: '600' },
 });

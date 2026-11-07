@@ -8,7 +8,7 @@ It uses the same accounts, groups and data as the website ([AtlasphereWebApp-Upd
 ## What's in this version (0.2)
 
 - Welcome screen
-- **Create an account**: name, email, phone (with country code), optional gender, password, then a 6-digit email code (paste and one-time-code autofill supported; it submits by itself once all six digits are in)
+- **Create an account**: name, email, phone (with country code), optional gender, password (with links to the Terms of Service and Privacy Policy), then a 6-digit email code (paste and one-time-code autofill supported; it submits by itself once all six digits are in)
 - **Log in**: an account that was never verified gets a fresh code instead
 - **Forgot password**: emails the same reset link as the website
 - Stays signed in between launches (the login token is kept in the phone's secure keychain/keystore)

@@ -9,6 +9,7 @@ import { PhoneField } from '@/components/PhoneField';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { api } from '@/lib/api';
+import { openPage, PRIVACY_URL, TERMS_URL } from '@/lib/links';
 import { fullPhone, validateRegister, type FieldErrors } from '@/lib/validation';
 
 import { authStyles as styles } from '@/components/authStyles';
@@ -67,6 +68,12 @@ export default function Register() {
         placeholder="6–12 characters" secureToggle maxLength={12}
         autoComplete="new-password" textContentType="newPassword" onSubmitEditing={submit} />
       <Button title="Create account" onPress={submit} loading={busy} />
+      <Text style={styles.legal}>
+        By creating an account, you agree to the{' '}
+        <Text style={styles.legalLink} accessibilityRole="link" onPress={() => openPage(TERMS_URL)}>Terms of Service</Text>
+        {' '}and{' '}
+        <Text style={styles.legalLink} accessibilityRole="link" onPress={() => openPage(PRIVACY_URL)}>Privacy Policy</Text>.
+      </Text>
       <View style={styles.footer}>
         <Text style={styles.footerText}>Already have an account? </Text>
         <Link href="/login" replace style={styles.link}>Log in</Link>
