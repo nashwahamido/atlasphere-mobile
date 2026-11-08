@@ -2,7 +2,7 @@
   "expo": {
     "name": "Atlasphere",
     "slug": "atlasphere-mobile",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "atlasphere",
@@ -28,7 +28,15 @@
       "expo-router",
       "expo-status-bar",
       "expo-secure-store",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Atlasphere uses your photos so you can add a trip picture.",
+          "cameraPermission": false,
+          "microphonePermission": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

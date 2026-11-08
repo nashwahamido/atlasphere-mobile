@@ -18,7 +18,7 @@ export default function TabsLayout() {
       }}>
       <Tabs.Screen
         name="index"
-        options={{ title: 'Home', tabBarIcon: ({ color, size }) => <Ionicons name="home-outline" size={size} color={String(color)} /> }}
+        options={{ title: 'Trips', tabBarIcon: ({ color, size }) => <Ionicons name="airplane-outline" size={size} color={String(color)} /> }}
       />
       <Tabs.Screen
         name="friends"
@@ -28,6 +28,10 @@ export default function TabsLayout() {
           tabBarBadgeStyle: { backgroundColor: colors.orange, color: colors.white },
           tabBarIcon: ({ color, size }) => <Ionicons name="people-outline" size={size} color={String(color)} />,
         }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{ title: 'Profile', tabBarIcon: ({ color, size }) => <Ionicons name="person-circle-outline" size={size} color={String(color)} /> }}
       />
     </Tabs>
   );

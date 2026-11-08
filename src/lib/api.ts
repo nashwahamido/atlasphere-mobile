@@ -15,6 +15,24 @@ export type Profile = Person & {
   planningCountries?: Country[];
   tripCount?: number;
 };
+export type TripSummary = {
+  id: string;
+  name: string;
+  destination: string;
+  cities: string[];
+  flag: string;
+  color: string;
+  photo: string;
+  days: number;
+  memberCount: number;
+  isOwner: boolean;
+  interests: string[];
+};
+export type TripMember = { id: number; username: string; profilePictureUrl: string; isOwner: boolean };
+export type Trip = TripSummary & { members: TripMember[]; inviteLink: string; dates: { start: string; end: string } | null };
+export type CountryOption = { code: string; name: string; flag: string; continent: string; cities: string[] };
+export type NewTrip = { country: string; cities: string[]; days: number; interests: string[] };
+
 export type FriendsData = { friends: Person[]; incoming: Person[]; outgoing: Person[] };
 export type FriendAction = 'request' | 'accept' | 'decline' | 'cancel' | 'remove';
 
@@ -30,19 +48,20 @@ export class ApiError extends Error {
 
 const TIMEOUT_MS = 20000;
 
-async function request<T>(path: string, options: { method?: string; body?: unknown; token?: string | null } = {}): Promise<T> {
+async function request<T>(path: string, options: { method?: string; body?: unknown; form?: FormData; token?: string | null } = {}): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), options.form ? 60000 : TIMEOUT_MS);
   let res: Response;
   try {
     res = await fetch(API_URL + '/api/mobile' + path, {
       method: options.method || 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-Type': 'application/json',
+        // For uploads, fetch sets the multipart boundary itself.
+        ...(options.form ? {} : { 'Content-Type': 'application/json' }),
         ...(options.token ? { Authorization: 'Bearer ' + options.token } : {}),
       },
-      body: options.body ? JSON.stringify(options.body) : undefined,
+      body: options.form ? options.form : options.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
     });
   } catch {
@@ -81,6 +100,22 @@ export const api = {
   person: (token: string, id: number | string) => request<{ person: Profile }>('/people/' + encodeURIComponent(String(id)), { token }),
   friendAction: (token: string, id: number | string, action: FriendAction) =>
     request<{ relationship: Relationship }>('/people/' + encodeURIComponent(String(id)) + '/' + action, { method: 'POST', token }),
+
+  countries: (token: string) => request<{ countries: CountryOption[]; interests: string[] }>('/countries', { token }),
+  trips: (token: string) => request<{ trips: TripSummary[] }>('/trips', { token }),
+  trip: (token: string, id: string) => request<{ trip: Trip }>('/trips/' + encodeURIComponent(id), { token }),
+  createTrip: (token: string, input: NewTrip) => request<{ trip: Trip }>('/trips', { method: 'POST', body: input, token }),
+  joinTrip: (token: string, code: string) => request<{ trip: Trip }>('/trips/join', { method: 'POST', body: { code }, token }),
+  addTripMember: (token: string, id: string, userId: number) =>
+    request<{ added: boolean; trip: Trip }>('/trips/' + encodeURIComponent(id) + '/members', { method: 'POST', body: { userId }, token }),
+  renameTrip: (token: string, id: string, name: string) =>
+    request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/rename', { method: 'POST', body: { name }, token }),
+  setTripInterests: (token: string, id: string, interests: string[]) =>
+    request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/interests', { method: 'POST', body: { interests }, token }),
+  uploadTripPhoto: (token: string, id: string, form: FormData) =>
+    request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/photo', { method: 'POST', form, token }),
+  leaveTrip: (token: string, id: string) => request<{ ok: boolean }>('/trips/' + encodeURIComponent(id) + '/leave', { method: 'POST', token }),
+  deleteTrip: (token: string, id: string) => request<{ ok: boolean }>('/trips/' + encodeURIComponent(id), { method: 'DELETE', token }),
 };
 
 // Profile pictures are stored as site-relative paths (/uploads/...).

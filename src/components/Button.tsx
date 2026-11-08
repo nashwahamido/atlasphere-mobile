@@ -4,7 +4,7 @@ import { colors, radius } from '@/lib/theme';
 
 type Props = Omit<PressableProps, 'children'> & {
   title: string;
-  variant?: 'primary' | 'secondary' | 'outlineLight' | 'link';
+  variant?: 'primary' | 'secondary' | 'outlineLight' | 'link' | 'danger';
   loading?: boolean;
 };
 
@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
   secondary: { backgroundColor: colors.field, borderWidth: 1, borderColor: colors.border },
   outlineLight: { borderWidth: 2, borderColor: 'rgba(255,255,255,0.7)' },
   link: { minHeight: 40, paddingHorizontal: 8 },
+  danger: { minHeight: 40, paddingHorizontal: 8 },
   text: { fontSize: 16, fontWeight: '700' },
 });
 
@@ -47,4 +48,5 @@ const textStyles = StyleSheet.create({
   secondary: { color: colors.navy },
   outlineLight: { color: colors.white },
   link: { color: colors.blue, fontWeight: '600' },
+  danger: { color: colors.error, fontWeight: '700' },
 });
