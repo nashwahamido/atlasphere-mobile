@@ -2,6 +2,7 @@ import { createContext, use, useCallback, useEffect, useMemo, useState, type Pro
 
 import { api, ApiError, type User } from './api';
 import { getItem, setItem } from './storage';
+import { closeSocket } from './socket';
 
 const TOKEN_KEY = 'atlasphere.token';
 const USER_KEY = 'atlasphere.user';
@@ -12,6 +13,7 @@ type SessionValue = {
   isLoading: boolean;
   signIn: (token: string, user: User) => Promise<void>;
   signOut: () => Promise<void>;
+  updateUser: (user: User) => Promise<void>;
 };
 
 const SessionContext = createContext<SessionValue | null>(null);
@@ -73,12 +75,19 @@ export function SessionProvider({ children }: PropsWithChildren) {
   }, []);
 
   const signOut = useCallback(async () => {
+    closeSocket();
     await setItem(TOKEN_KEY, null);
     await setItem(USER_KEY, null);
     setToken(null);
     setUser(null);
   }, []);
 
-  const value = useMemo(() => ({ token, user, isLoading, signIn, signOut }), [token, user, isLoading, signIn, signOut]);
+  // After a profile change (e.g. a new photo).
+  const updateUser = useCallback(async (next: User) => {
+    await setItem(USER_KEY, JSON.stringify(next));
+    setUser(next);
+  }, []);
+
+  const value = useMemo(() => ({ token, user, isLoading, signIn, signOut, updateUser }), [token, user, isLoading, signIn, signOut, updateUser]);
   return <SessionContext value={value}>{children}</SessionContext>;
 }

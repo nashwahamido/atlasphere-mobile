@@ -1,17 +1,16 @@
 import * as Clipboard from 'expo-clipboard';
-import * as ImagePicker from 'expo-image-picker';
-import * as Linking from 'expo-linking';
 import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Platform, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
+import { TripTiles } from '@/components/TripTiles';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { absoluteUrl, api, type Trip } from '@/lib/api';
-import { API_URL } from '@/lib/config';
-import { confirmAction, notify } from '@/lib/confirm';
+import { confirmAction } from '@/lib/confirm';
+import { pickPhotoForm } from '@/lib/photo';
 import { useFriends } from '@/lib/friends';
 import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
@@ -72,23 +71,9 @@ export default function TripScreen() {
   }
 
   async function pickPhoto() {
-    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) {
-      notify('Photos access needed', 'Allow Atlasphere to use your photos in Settings to add a trip picture.');
-      return;
-    }
-    const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect: [4, 3], quality: 0.8 });
-    if (picked.canceled || !picked.assets?.length) return;
-    const asset = picked.assets[0];
+    const form = await pickPhotoForm([4, 3]);
+    if (!form) return;
     await run('photo', async () => {
-      const form = new FormData();
-      if (Platform.OS === 'web') {
-        const blob = await (await fetch(asset.uri)).blob();
-        form.append('photo', blob, asset.fileName || 'trip.jpg');
-      } else {
-        // React Native's FormData takes { uri, name, type } for files.
-        form.append('photo', { uri: asset.uri, name: asset.fileName || 'trip.jpg', type: asset.mimeType || 'image/jpeg' } as unknown as Blob);
-      }
       const res = await call((t) => api.uploadTripPhoto(t, id, form));
       apply(res.trip);
       setNotice('Photo updated.');
@@ -181,6 +166,8 @@ export default function TripScreen() {
           </Pressable>
         </View>
 
+        <TripTiles tripId={trip.id} />
+
         {notice ? <Banner kind="success" message={notice} /> : null}
         {error ? <Banner kind="error" message={error} /> : null}
 
@@ -254,13 +241,6 @@ export default function TripScreen() {
           </View>
         </View>
 
-        {/* Coming next */}
-        <View style={[styles.card, styles.soon]}>
-          <Text style={styles.cardTitle}>Chat, recommendations and the itinerary</Text>
-          <Text style={styles.cardText}>These are coming to the app next. For now they’re on the website, with the same account.</Text>
-          <Button title="Open this trip on the website" variant="secondary" onPress={() => Linking.openURL(API_URL + '/groups/' + trip.id)} />
-        </View>
-
         {/* Manage */}
         <View style={styles.card}>
           <Text style={styles.cardTitle}>Trip settings</Text>
@@ -298,7 +278,6 @@ const styles = StyleSheet.create({
   facts: { gap: 4 },
   fact: { fontSize: 16, color: colors.navy, fontWeight: '600' },
   card: { backgroundColor: colors.field, borderRadius: radius.card, borderWidth: 1, borderColor: colors.border, padding: 16, gap: 10 },
-  soon: { backgroundColor: colors.bg },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   cardTitle: { fontSize: 17, fontWeight: '800', color: colors.navy },
   cardText: { fontSize: 14, color: colors.textMuted, lineHeight: 20 },
