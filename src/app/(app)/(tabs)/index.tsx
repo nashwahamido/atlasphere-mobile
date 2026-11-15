@@ -8,11 +8,13 @@ import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { TripCard } from '@/components/TripCard';
 import { api } from '@/lib/api';
+import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
 import { colors } from '@/lib/theme';
 
 export default function TripsTab() {
   const { trips, loading, error, refresh, call } = useTrips();
+  const { user } = useSession();
   const [refreshing, setRefreshing] = useState(false);
   const [unread, setUnread] = useState(0);
 
@@ -58,8 +60,8 @@ export default function TripsTab() {
           ListHeaderComponent={header}
           ListEmptyComponent={
             <View style={styles.empty}>
-              <Text style={styles.emptyTitle}>No trips yet</Text>
-              <Text style={styles.emptyText}>Start one and invite your friends, or paste an invite link someone sent you.</Text>
+              <Text style={styles.emptyTitle}>{user?.username ? `Welcome, ${user.username}!` : 'No trips yet'}</Text>
+              <Text style={styles.emptyText}>Atlasphere is for planning trips with your friends. Tap “New trip” to start one and invite your group, or “Join with a link” if a friend sent you one.</Text>
             </View>
           }
           contentContainerStyle={styles.list}

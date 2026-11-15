@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { Banner } from '@/components/Banner';
+import { usePendingInvite } from '@/lib/pendingInvite';
 import { Button } from '@/components/Button';
 import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
@@ -12,6 +13,7 @@ import { validateLogin, type FieldErrors } from '@/lib/validation';
 import { authStyles as styles } from '@/components/authStyles';
 
 export default function Login() {
+  const invite = usePendingInvite();
   const { signIn } = useSession();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -50,6 +52,7 @@ export default function Login() {
     <Screen>
       <Text style={styles.title}>Welcome back</Text>
       <Text style={styles.subtitle}>Log in to plan your next trip with your group.</Text>
+      {invite ? <Banner kind="success" message="Log in and you’ll go straight into the trip you were invited to." /> : null}
       <Banner kind="error" message={message} />
       <TextField
         label="Email"

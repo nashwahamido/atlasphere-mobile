@@ -5,6 +5,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { api } from '@/lib/api';
+import { setPendingInvite } from '@/lib/pendingInvite';
 import { useTrips } from '@/lib/trips';
 import { colors } from '@/lib/theme';
 
@@ -16,6 +17,7 @@ export default function JoinFromLink() {
 
   useEffect(() => {
     let cancelled = false;
+    setPendingInvite(null); // handled here
     call((t) => api.joinTrip(t, String(code || '')))
       .then((res) => {
         if (cancelled) return;

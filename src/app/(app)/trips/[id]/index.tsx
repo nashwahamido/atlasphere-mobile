@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Platform, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,6 +36,7 @@ export default function TripScreen() {
   const [showFriends, setShowFriends] = useState(false);
   const [renaming, setRenaming] = useState(false);
   const [newName, setNewName] = useState('');
+  const [inviteEmail, setInviteEmail] = useState('');
 
   const apply = useCallback((t: Trip) => { setTrip(t); upsert(t); }, [upsert]);
 
@@ -56,6 +57,37 @@ export default function TripScreen() {
       .catch((e) => { if (!cancelled) setError(e instanceof Error ? e.message : 'Couldn’t load this trip.'); });
     return () => { cancelled = true; };
   }, [call, id, apply]);
+
+  // While you're the only one on the trip, check now and then for friends
+  // joining so they show up without a manual refresh.
+  const alone = !!trip && trip.members.length === 1;
+  const memberIds = trip ? trip.members.map((m) => String(m.id)).join(',') : '';
+  useFocusEffect(useCallback(() => {
+    if (!alone) return;
+    let cancelled = false;
+    const known = new Set(memberIds.split(','));
+    const timer = setInterval(() => {
+      call((t) => api.trip(t, id)).then((res) => {
+        if (cancelled) return;
+        const fresh = res.trip.members.filter((m) => !known.has(String(m.id)));
+        if (fresh.length) {
+          apply(res.trip);
+          setNotice(`${fresh.map((m) => m.username).join(', ')} joined the trip! 🎉`);
+        }
+      }).catch(() => {});
+    }, 10000);
+    return () => { cancelled = true; clearInterval(timer); };
+  }, [alone, memberIds, call, id, apply]));
+
+  async function sendInvite() {
+    const email = inviteEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Enter a valid email address.'); return; }
+    await run('invite', async () => {
+      await call((t) => api.inviteByEmail(t, id, email));
+      setInviteEmail('');
+      setNotice(`Invite sent to ${email}. If it doesn’t arrive, ask them to check their spam folder.`);
+    });
+  }
 
   const addable = useMemo(() => {
     if (!trip) return [];
@@ -148,6 +180,27 @@ export default function TripScreen() {
 
   const photo = absoluteUrl(trip.photo);
 
+  const inviteCard = (
+    <View style={[styles.card, alone ? styles.cardHighlight : null]}>
+      <Text style={styles.cardTitle}>{alone ? 'Invite your group' : 'Invite people'}</Text>
+      <Text style={styles.cardText}>
+        {alone ? 'Atlasphere is for planning together. Send your friends this link and they can join in one tap.' : 'Anyone with this link can join the trip.'}
+      </Text>
+      <Text selectable style={styles.link} numberOfLines={1}>{trip.inviteLink}</Text>
+      <View style={styles.row}>
+        <Button title="Share link" onPress={shareLink} style={styles.flex} />
+        <Button title="Copy" variant="secondary" onPress={copyLink} style={styles.copy} />
+      </View>
+      <View style={styles.row}>
+        <TextInput value={inviteEmail} onChangeText={setInviteEmail} placeholder="Or invite by email" placeholderTextColor={colors.textMuted}
+          style={[styles.input, styles.emailInput]} keyboardType="email-address" autoCapitalize="none" autoCorrect={false} autoComplete="email"
+          returnKeyType="send" onSubmitEditing={sendInvite} accessibilityLabel="Friend’s email" />
+        <Button title="Send" variant="secondary" onPress={sendInvite} loading={busy === 'invite'} disabled={!inviteEmail.trim()} style={styles.copy} />
+      </View>
+      {alone ? <Text style={styles.cardText}>Just you so far. Friends show up here as soon as they join.</Text> : null}
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <Stack.Screen options={{ title: trip.name }} />
@@ -166,26 +219,19 @@ export default function TripScreen() {
           </Pressable>
         </View>
 
-        <TripTiles tripId={trip.id} />
-
         {notice ? <Banner kind="success" message={notice} /> : null}
         {error ? <Banner kind="error" message={error} /> : null}
+
+        {alone ? inviteCard : null}
+
+        <TripTiles tripId={trip.id} />
 
         <View style={styles.facts}>
           <Text style={styles.fact}>📍 {trip.cities.join(' → ')}</Text>
           <Text style={styles.fact}>🗓 {trip.dates ? `${niceDate(trip.dates.start)} – ${niceDate(trip.dates.end)}` : `${trip.days} ${trip.days === 1 ? 'day' : 'days'} · dates not picked yet`}</Text>
         </View>
 
-        {/* Invite */}
-        <View style={styles.card}>
-          <Text style={styles.cardTitle}>Invite people</Text>
-          <Text style={styles.cardText}>Anyone with this link can join the trip.</Text>
-          <Text selectable style={styles.link} numberOfLines={1}>{trip.inviteLink}</Text>
-          <View style={styles.row}>
-            <Button title="Share link" onPress={shareLink} style={styles.flex} />
-            <Button title="Copy" variant="secondary" onPress={copyLink} style={styles.copy} />
-          </View>
-        </View>
+        {alone ? null : inviteCard}
 
         {/* Members */}
         <View style={styles.card}>
@@ -279,6 +325,8 @@ const styles = StyleSheet.create({
   fact: { fontSize: 16, color: colors.navy, fontWeight: '600' },
   card: { backgroundColor: colors.field, borderRadius: radius.card, borderWidth: 1, borderColor: colors.border, padding: 16, gap: 10 },
   cardHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  emailInput: { flex: 1, minWidth: 0 },
+  cardHighlight: { borderColor: colors.orange, borderWidth: 2 },
   cardTitle: { fontSize: 17, fontWeight: '800', color: colors.navy },
   cardText: { fontSize: 14, color: colors.textMuted, lineHeight: 20 },
   link: { fontSize: 14, color: colors.blue, backgroundColor: colors.bg, borderRadius: 10, padding: 10, borderWidth: 1, borderColor: colors.border },

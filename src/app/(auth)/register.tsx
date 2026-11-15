@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { Banner } from '@/components/Banner';
+import { usePendingInvite } from '@/lib/pendingInvite';
 import { Button } from '@/components/Button';
 import { ChoiceChips } from '@/components/ChoiceChips';
 import { PhoneField } from '@/components/PhoneField';
@@ -21,6 +22,7 @@ const GENDERS = [
 ];
 
 export default function Register() {
+  const invite = usePendingInvite();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [countryCode, setCountryCode] = useState('+353');
@@ -56,6 +58,7 @@ export default function Register() {
     <Screen>
       <Text style={styles.title}>Create your account</Text>
       <Text style={styles.subtitle}>Plan trips together: chat, vote on things to do and build the itinerary.</Text>
+      {invite ? <Banner kind="success" message="You’ve been invited to a trip. Create your account and you’ll go straight into it." /> : null}
       <Banner kind="error" message={message} />
       <TextField label="Name" value={username} onChangeText={edit('username', setUsername)} error={errors.username}
         placeholder="Your name" autoComplete="name" textContentType="name" maxLength={20} />

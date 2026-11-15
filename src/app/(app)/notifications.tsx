@@ -17,7 +17,7 @@ function ago(iso: string | null) {
   return Math.floor(s / 86400) + ' d ago';
 }
 
-const ICON: Record<string, string> = { vote: '👍', invite: '🧳', 'friend-request': '👋', 'friend-accepted': '🤝' };
+const ICON: Record<string, string> = { vote: '👍', invite: '🧳', join: '🙌', 'friend-request': '👋', 'friend-accepted': '🤝' };
 
 export default function Notifications() {
   const { call } = useTrips();

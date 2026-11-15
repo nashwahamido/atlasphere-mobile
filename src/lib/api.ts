@@ -134,6 +134,8 @@ export const api = {
   trips: (token: string) => request<{ trips: TripSummary[] }>('/trips', { token }),
   trip: (token: string, id: string) => request<{ trip: Trip }>('/trips/' + encodeURIComponent(id), { token }),
   createTrip: (token: string, input: NewTrip) => request<{ trip: Trip }>('/trips', { method: 'POST', body: input, token }),
+  inviteByEmail: (token: string, id: string, email: string) =>
+    request<{ ok: boolean; message: string }>(`/trips/${encodeURIComponent(id)}/invite-email`, { method: 'POST', body: { email }, token }),
   joinTrip: (token: string, code: string) => request<{ trip: Trip }>('/trips/join', { method: 'POST', body: { code }, token }),
   addTripMember: (token: string, id: string, userId: number) =>
     request<{ added: boolean; trip: Trip }>('/trips/' + encodeURIComponent(id) + '/members', { method: 'POST', body: { userId }, token }),
