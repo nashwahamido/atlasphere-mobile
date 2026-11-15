@@ -1,4 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import Constants from 'expo-constants';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Switch, Text, View } from 'react-native';
@@ -161,6 +162,7 @@ export default function ProfileTab() {
 
         <Button title="Log out" variant="secondary" onPress={signOut} />
         <Button title="Delete account" variant="danger" onPress={deleteAccount} loading={busy === 'delete'} />
+        <Text style={styles.version}>Atlasphere {Constants.expoConfig?.version || ''}</Text>
       </ScrollView>
     </SafeAreaView>
   );
@@ -180,6 +182,7 @@ function Row({ icon, label, onPress, last }: { icon: keyof typeof Ionicons.glyph
 
 const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
+  version: { textAlign: 'center', fontSize: 12, color: colors.textMuted, marginTop: 4 },
   content: { padding: 20, paddingBottom: 40, gap: 14, width: '100%', maxWidth: 520, alignSelf: 'center' },
   top: { alignItems: 'center', gap: 4, marginTop: 8 },
   camera: { position: 'absolute', right: 0, bottom: 0, width: 32, height: 32, borderRadius: 16, backgroundColor: colors.orange, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.white },
