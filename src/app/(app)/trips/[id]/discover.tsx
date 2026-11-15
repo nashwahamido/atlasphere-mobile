@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Animated, FlatList, Image, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ChatButton } from '@/components/ChatButton';
 import { Banner } from '@/components/Banner';
 import { absoluteUrl, api, type Recommendation, type SavedActivity, type Vote } from '@/lib/api';
 import { useSession } from '@/lib/session';
@@ -146,6 +147,7 @@ export default function Discover() {
             )}
           />
         )}
+        <ChatButton tripId={id} />
       </SafeAreaView>
     );
   }
@@ -211,6 +213,7 @@ export default function Discover() {
         </View>
       ) : null}
       {current && Platform.OS !== 'web' ? <Text style={styles.hint}>Swipe right to upvote, left to dismiss, up to save</Text> : null}
+      <ChatButton tripId={id} />
     </SafeAreaView>
   );
 }

@@ -44,8 +44,8 @@ export default function ProfileTab() {
         await disablePush(token, { remember: true });
         setPush('off');
       }
-    } catch {
-      setError('Couldn’t change push notifications. Please try again.');
+    } catch (e) {
+      setError('Couldn’t change push notifications' + (e instanceof Error && e.message ? `: ${e.message}` : '. Please try again.'));
     } finally {
       setBusy(null);
     }

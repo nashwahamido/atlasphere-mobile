@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ChatButton } from '@/components/ChatButton';
 import { Banner } from '@/components/Banner';
 import { CrowdMap } from '@/components/CrowdMap';
 import { api, type DestinationDay, type DestinationInfo, type PlacesInfo } from '@/lib/api';
@@ -199,6 +200,7 @@ export default function DestinationScreen() {
 
         <Text style={styles.credits}>Weather: Open-Meteo and MET Norway · Holidays: Nager.Date · Places and hours: OpenStreetMap via Geoapify</Text>
       </ScrollView>
+      <ChatButton tripId={id} />
     </SafeAreaView>
   );
 }

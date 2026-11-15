@@ -222,9 +222,9 @@ export default function TripScreen() {
         {notice ? <Banner kind="success" message={notice} /> : null}
         {error ? <Banner kind="error" message={error} /> : null}
 
-        {alone ? inviteCard : null}
-
         <TripTiles tripId={trip.id} />
+
+        {alone ? inviteCard : null}
 
         <View style={styles.facts}>
           <Text style={styles.fact}>📍 {trip.cities.join(' → ')}</Text>

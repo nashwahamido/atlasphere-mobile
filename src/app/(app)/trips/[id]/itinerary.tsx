@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { ChatButton } from '@/components/ChatButton';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { RangeCalendar } from '@/components/RangeCalendar';
@@ -158,6 +159,7 @@ export default function ItineraryScreen() {
           <Button title="Save dates" onPress={saveDates} disabled={!range.start || !range.end} loading={savingDates} />
           {it.dates ? <Button title="Cancel" variant="link" onPress={() => setPicking(false)} /> : null}
         </ScrollView>
+        <ChatButton tripId={id} />
       </SafeAreaView>
     );
   }
@@ -272,6 +274,7 @@ export default function ItineraryScreen() {
           onSaved={async () => { setEditing(null); await load(); }}
         />
       ) : null}
+      <ChatButton tripId={id} />
     </SafeAreaView>
   );
 }
