@@ -1,4 +1,4 @@
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text } from 'react-native';
 
@@ -66,13 +66,14 @@ export default function Verify() {
       <Text style={styles.title}>Check your email</Text>
       <Text style={styles.subtitle}>
         Enter the 6-digit code we sent to <Text style={{ color: colors.orange, fontWeight: '700' }}>{params.email}</Text>.
-        {'\n'}Can’t find it? Check your spam folder. The code is valid for 30 minutes.
+        {'\n\n'}It comes from Atlasphere with the subject “…is your Atlasphere verification code”. Can’t find it? Check your spam or junk folder (and the Promotions tab in Gmail). It can take a minute or two, and the code is valid for 30 minutes.
       </Text>
       <Banner kind="success" message={info} />
       <Banner kind="error" message={error} />
       <CodeInput value={code} onChange={onCodeChange} error={!!error} />
       <Button title="Verify" onPress={() => submit()} loading={busy} />
-      <Button title="Send code again" variant="link" onPress={resend} loading={resending} style={{ marginTop: 12 }} />
+      <Button title="Didn’t get it? Send a new code" variant="link" onPress={resend} loading={resending} style={{ marginTop: 12 }} />
+      <Button title="Wrong email? Sign up again" variant="link" onPress={() => router.replace('/(auth)/register')} />
     </Screen>
   );
 }
