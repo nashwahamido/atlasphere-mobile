@@ -1,11 +1,15 @@
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
+import { GoogleButton } from '@/components/GoogleButton';
 import { Wordmark } from '@/components/Wordmark';
 
 export default function Welcome() {
+  const [error, setError] = useState<string | null>(null);
   return (
     <ImageBackground source={require('../../../assets/hero.jpg')} style={styles.bg} resizeMode="cover">
       <View style={styles.shade} />
@@ -16,6 +20,8 @@ export default function Welcome() {
           <Text style={styles.tagline}>Stop planning. Start going. Atlasphere turns group chats into group trips.</Text>
         </View>
         <View style={styles.actions}>
+          <Banner kind="error" message={error} />
+          <GoogleButton onError={setError} light />
           <Button title="Create an account" onPress={() => router.push('/register')} />
           <Button title="Log in" variant="outlineLight" onPress={() => router.push('/login')} />
         </View>

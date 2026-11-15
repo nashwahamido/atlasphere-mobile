@@ -5,11 +5,11 @@ The Atlasphere app for iPhone and Android, built with React Native and [Expo](ht
 
 It uses the same accounts, groups and data as the website ([AtlasphereWebApp-Updated](https://github.com/nashwahamido/AtlasphereWebApp-Updated)). The app talks to the website's server through its `/api/mobile` endpoints.
 
-## What's in this version (1.0)
+## What's in this version (1.1)
 
 Everything the website has, on your phone, with the same account and data:
 
-- **Account**: create an account (with the email code), log in, forgot password, stays signed in
+- **Account**: create an account (with the email code) or continue with Google, log in, forgot password, stays signed in
 - **Trips**: your trips, new trip (country → cities → days and interests), join with an invite link, trip photo, invite friends, rename, leave, delete
 - **Chat**: live group chat, the same conversation as the website (shared places show as cards)
 - **Recommendations**: swipe right to upvote, left to dismiss, up to save; filter by city; “closed on your dates” notes; share a place to the chat; see the group’s picks

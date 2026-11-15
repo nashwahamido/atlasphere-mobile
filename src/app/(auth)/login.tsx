@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { Banner } from '@/components/Banner';
+import { GoogleButton } from '@/components/GoogleButton';
 import { usePendingInvite } from '@/lib/pendingInvite';
 import { Button } from '@/components/Button';
 import { Screen } from '@/components/Screen';
@@ -55,6 +56,7 @@ export default function Login() {
       <Text style={styles.subtitle}>Log in to plan your next trip with your group.</Text>
       {invite ? <Banner kind="success" message="Log in and you’ll go straight into the trip you were invited to." /> : null}
       <Banner kind="error" message={message} />
+      <GoogleButton onError={setMessage} />
       <TextField
         label="Email"
         value={email}

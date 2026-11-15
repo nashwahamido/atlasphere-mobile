@@ -109,6 +109,9 @@ async function request<T>(path: string, options: { method?: string; body?: unkno
 }
 
 export const api = {
+  authProviders: () => request<{ google: boolean }>('/auth/providers'),
+  googleSignIn: (code: string, verifier: string) =>
+    request<AuthResult>('/auth/google', { method: 'POST', body: { code, verifier } }),
   login: (email: string, password: string) =>
     request<AuthResult>('/auth/login', { method: 'POST', body: { email: email.trim(), password } }),
   register: (input: { username: string; email: string; phone: string; gender?: string; password: string }) =>

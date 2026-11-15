@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { Banner } from '@/components/Banner';
+import { GoogleButton } from '@/components/GoogleButton';
 import { usePendingInvite } from '@/lib/pendingInvite';
 import { Button } from '@/components/Button';
 import { ChoiceChips } from '@/components/ChoiceChips';
@@ -61,6 +62,7 @@ export default function Register() {
       <Text style={styles.subtitle}>Plan trips together: chat, vote on things to do and build the itinerary.</Text>
       {invite ? <Banner kind="success" message="You’ve been invited to a trip. Create your account and you’ll go straight into it." /> : null}
       <Banner kind="error" message={message} />
+      <GoogleButton onError={setMessage} />
       <TextField label="Name" value={username} onChangeText={edit('username', setUsername)} error={errors.username}
         placeholder="Your name" autoComplete="name" textContentType="name" maxLength={20} />
       <TextField label="Email" value={email} onChangeText={edit('email', setEmail)} error={errors.email}
