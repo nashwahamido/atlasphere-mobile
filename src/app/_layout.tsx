@@ -1,8 +1,10 @@
 import { DarkTheme, DefaultTheme, router, SplashScreen, Stack, ThemeProvider as NavigationTheme } from 'expo-router';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { AnimatedSplash } from '@/components/AnimatedSplash';
 import { takePendingInvite } from '@/lib/pendingInvite';
 import { SessionProvider, useSession } from '@/lib/session';
 import { ThemeProvider, useTheme } from '@/lib/theme';
@@ -14,12 +16,27 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <ThemeProvider>
         <SessionProvider>
-          <Themed>
-            <RootNavigator />
-          </Themed>
+          <AppShell />
         </SessionProvider>
       </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+// The app under the animated opening screen. The phone's own splash (same
+// navy) is swapped for the animated one as soon as the app starts.
+function AppShell() {
+  const { isLoading } = useSession();
+  const [splash, setSplash] = useState(true);
+  useEffect(() => { SplashScreen.hide(); }, []);
+  const done = useCallback(() => setSplash(false), []);
+  return (
+    <View style={{ flex: 1, backgroundColor: '#0B3856' }}>
+      <Themed>
+        <RootNavigator />
+      </Themed>
+      {splash ? <AnimatedSplash ready={!isLoading} onDone={done} /> : null}
+    </View>
   );
 }
 
@@ -43,9 +60,6 @@ function Themed({ children }: { children: React.ReactNode }) {
 function RootNavigator() {
   const { token, isLoading } = useSession();
   // Keep the splash screen up until we know whether someone is signed in.
-  useEffect(() => {
-    if (!isLoading) SplashScreen.hide();
-  }, [isLoading]);
   // Just signed in (not already signed in at launch): if they opened an
   // invite link first, take them into that trip.
   const wasSignedIn = useRef<boolean | null>(null);

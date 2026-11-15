@@ -2,7 +2,7 @@
   "expo": {
     "name": "Atlasphere",
     "slug": "atlasphere-mobile",
-    "version": "0.9.1",
+    "version": "0.9.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "atlasphere",
@@ -48,7 +48,7 @@
         {
           "backgroundColor": "#0B3856",
           "image": "./assets/splash-icon.png",
-          "imageWidth": 140,
+          "imageWidth": 160,
           "resizeMode": "contain",
           "dark": {
             "backgroundColor": "#0B3856",
