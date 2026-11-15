@@ -226,14 +226,12 @@ export default function TripScreen() {
 
         <TripTiles tripId={trip.id} />
 
-        {alone ? inviteCard : null}
-
         <View style={styles.facts}>
           <Text style={styles.fact}>📍 {trip.cities.join(' → ')}</Text>
           <Text style={styles.fact}>🗓 {trip.dates ? `${niceDate(trip.dates.start)} – ${niceDate(trip.dates.end)}` : `${trip.days} ${trip.days === 1 ? 'day' : 'days'} · dates not picked yet`}</Text>
         </View>
 
-        {alone ? null : inviteCard}
+        {inviteCard}
 
         {/* Members */}
         <View style={styles.card}>

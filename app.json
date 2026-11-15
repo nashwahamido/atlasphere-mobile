@@ -2,7 +2,7 @@
   "expo": {
     "name": "Atlasphere",
     "slug": "atlasphere-mobile",
-    "version": "0.9.0",
+    "version": "0.9.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "atlasphere",
@@ -42,6 +42,19 @@
           "cameraPermission": false,
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0B3856",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 140,
+          "resizeMode": "contain",
+          "dark": {
+            "backgroundColor": "#0B3856",
+            "image": "./assets/splash-icon.png"
+          }
+        }
       ]
     ],
     "experiments": {
@@ -58,6 +71,12 @@
         "projectId": "829aec12-43bc-433d-9e38-5d87bd0aab5d"
       }
     },
-    "owner": "nashwah-2"
+    "owner": "nashwah-2",
+    "backgroundColor": "#0B3856",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#0B3856"
+    }
   }
 }
