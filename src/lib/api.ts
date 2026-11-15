@@ -179,6 +179,10 @@ export const api = {
   setVisited: (token: string, countries: string[], cities: string[]) =>
     request<{ ok: boolean }>('/me/visited', { method: 'PUT', body: { countries, cities }, token }),
   uploadMyPhoto: (token: string, form: FormData) => request<{ user: User }>('/me/photo', { method: 'POST', form, token }),
+  savePushToken: (token: string, pushToken: string, platform: string) =>
+    request<{ ok: boolean }>('/me/push-token', { method: 'POST', body: { token: pushToken, platform }, token }),
+  deletePushToken: (token: string, pushToken: string) =>
+    request<{ ok: boolean }>('/me/push-token', { method: 'DELETE', body: { token: pushToken }, token }),
   deleteAccount: (token: string) => request<{ ok: boolean }>('/me', { method: 'DELETE', body: { confirm: true }, token }),
 };
 

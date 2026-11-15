@@ -2,6 +2,7 @@ import { createContext, use, useCallback, useEffect, useMemo, useState, type Pro
 
 import { api, ApiError, type User } from './api';
 import { getItem, setItem } from './storage';
+import { disablePush } from './push';
 import { closeSocket } from './socket';
 
 const TOKEN_KEY = 'atlasphere.token';
@@ -76,11 +77,12 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
   const signOut = useCallback(async () => {
     closeSocket();
+    await disablePush(token, { remember: false }).catch(() => {}); // stop pushes to this phone
     await setItem(TOKEN_KEY, null);
     await setItem(USER_KEY, null);
     setToken(null);
     setUser(null);
-  }, []);
+  }, [token]);
 
   // After a profile change (e.g. a new photo).
   const updateUser = useCallback(async (next: User) => {

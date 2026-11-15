@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 
+import { PushSetup } from '@/components/PushSetup';
 import { FriendsProvider } from '@/lib/friends';
 import { TripsProvider } from '@/lib/trips';
 import { colors } from '@/lib/theme';
@@ -8,6 +9,7 @@ export default function AppLayout() {
   return (
     <FriendsProvider>
       <TripsProvider>
+      <PushSetup />
       <Stack
         screenOptions={{
           contentStyle: { backgroundColor: colors.bg },

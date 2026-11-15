@@ -2,7 +2,7 @@
   "expo": {
     "name": "Atlasphere",
     "slug": "atlasphere-mobile",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "scheme": "atlasphere",
@@ -29,6 +29,12 @@
       "expo-status-bar",
       "expo-secure-store",
       "expo-web-browser",
+      [
+        "expo-notifications",
+        {
+          "color": "#E8933A"
+        }
+      ],
       [
         "expo-image-picker",
         {

@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
@@ -11,17 +11,45 @@ import { api, type MyProfile } from '@/lib/api';
 import { confirmAction } from '@/lib/confirm';
 import { HELP_URL, openPage, PRIVACY_URL, TERMS_URL } from '@/lib/links';
 import { pickPhotoForm } from '@/lib/photo';
+import { disablePush, enablePush, openPhoneSettings, pushStatus, type PushStatus } from '@/lib/push';
 import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
 import { colors, radius } from '@/lib/theme';
 
 export default function ProfileTab() {
-  const { user, signOut, updateUser } = useSession();
+  const { token, user, signOut, updateUser } = useSession();
   const { call } = useTrips();
   const [profile, setProfile] = useState<MyProfile | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [push, setPush] = useState<PushStatus | null>(null);
+
+  // Re-checked on focus: it may have been changed in the phone's settings.
+  useFocusEffect(useCallback(() => {
+    let cancelled = false;
+    pushStatus().then((s) => { if (!cancelled) setPush(s); }).catch(() => {});
+    return () => { cancelled = true; };
+  }, []));
+
+  async function togglePush(on: boolean) {
+    if (!token) return;
+    setBusy('push');
+    try {
+      if (on) {
+        const s = await enablePush(token, { ask: true });
+        setPush(s);
+        if (s === 'on') setNotice('Push notifications are on.');
+      } else {
+        await disablePush(token, { remember: true });
+        setPush('off');
+      }
+    } catch {
+      setError('Couldn’t change push notifications. Please try again.');
+    } finally {
+      setBusy(null);
+    }
+  }
 
   // Refresh whenever the tab is shown (e.g. after editing places).
   useFocusEffect(useCallback(() => {
@@ -91,6 +119,25 @@ export default function ProfileTab() {
           ) : <Text style={styles.muted}>Add the countries and cities you’ve visited. Your friends can see them.</Text>}
           {profile?.visitedCities.length ? <Text style={styles.muted}>{profile.visitedCities.join(' · ')}</Text> : null}
         </View>
+
+        {push && push !== 'unsupported' ? (
+          <View style={styles.card}>
+            <View style={styles.rowBetween}>
+              <Text style={styles.cardTitle}>Push notifications</Text>
+              {push === 'not-configured' ? null : (
+                <Switch value={push === 'on'} onValueChange={togglePush} disabled={busy === 'push'}
+                  trackColor={{ true: colors.orange, false: colors.border }} accessibilityLabel="Push notifications" />
+              )}
+            </View>
+            <Text style={styles.muted}>
+              {push === 'on' ? 'You’ll hear about new messages, votes, people joining your trips and friend requests.'
+                : push === 'denied' ? 'Notifications are turned off for Atlasphere in your phone’s settings.'
+                : push === 'not-configured' ? 'Push notifications aren’t set up in this version of the app yet.'
+                : 'Get told about new messages, votes, people joining your trips and friend requests.'}
+            </Text>
+            {push === 'denied' ? <Button title="Open settings" variant="link" onPress={openPhoneSettings} /> : null}
+          </View>
+        ) : null}
 
         <View style={styles.list}>
           <Row icon="notifications-outline" label="Notifications" onPress={() => router.push('/notifications')} />

@@ -5,7 +5,7 @@ The Atlasphere app for iPhone and Android, built with React Native and [Expo](ht
 
 It uses the same accounts, groups and data as the website ([AtlasphereWebApp-Updated](https://github.com/nashwahamido/AtlasphereWebApp-Updated)). The app talks to the website's server through its `/api/mobile` endpoints.
 
-## What's in this version (0.4)
+## What's in this version (0.6)
 
 Everything the website has, on your phone, with the same account and data:
 
@@ -17,6 +17,8 @@ Everything the website has, on your phone, with the same account and data:
 - **Destination**: local time, weather, the forecast for each day (or typical weather), public holidays, closures and the crowd map, per city
 - **Friends**: find people, requests, profiles
 - **Profile**: photo, places you’ve been, notifications, Help/Privacy/Terms, log out, delete account
+- **Invites**: a new trip puts “Invite your group” first (share link, copy, invite by email); friends show up as they join; invite links opened while signed out open the trip after you sign in
+- **Push notifications**: new chat messages, votes, people joining your trips and friend requests; tapping one opens the right screen; on/off switch in Profile
 
 ## Try it on your phone
 
@@ -29,6 +31,20 @@ Everything the website has, on your phone, with the same account and data:
 3. Scan the QR code: with the Camera app on iPhone, or from inside Expo Go on Android.
 
 The app connects to the live server at `https://atlasphere.up.railway.app` by default, so you can sign in with your existing Atlasphere account.
+
+### Turning on push notifications (one time)
+
+Push notifications need an Expo project id. On your computer, in this folder:
+
+```bash
+npm install -g eas-cli
+eas login          # your Expo account (free)
+eas init           # creates the project and adds its id to app.json
+```
+
+Commit the `app.json` change. Until this is done the app works normally, just without push.
+
+To test push you need a real phone (not a simulator). On iPhone, Expo Go works. On Android, Expo Go no longer supports push, so use a development build: `eas build --profile development --platform android`, install it, then `npx expo start`.
 
 ### Using a local server instead
 
