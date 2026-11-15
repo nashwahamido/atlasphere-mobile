@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { colors } from '@/lib/theme';
+import { makeStyles } from '@/lib/theme';
 
 const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const HEAD = ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'];
@@ -9,6 +9,7 @@ const iso = (y: number, m: number, d: number) => new Date(Date.UTC(y, m, d)).toI
 
 // Tap the first day, then the last day of the trip (up to 60 days).
 export function RangeCalendar({ start, end, onChange }: { start: string | null; end: string | null; onChange: (start: string | null, end: string | null) => void }) {
+  const styles = useStyles();
   const first = start ? new Date(start + 'T12:00:00Z') : new Date();
   const [year, setYear] = useState(first.getUTCFullYear());
   const [month, setMonth] = useState(first.getUTCMonth());
@@ -60,7 +61,7 @@ export function RangeCalendar({ start, end, onChange }: { start: string | null; 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   head: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
   title: { fontSize: 17, fontWeight: '700', color: colors.navy },
   arrow: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.field },
@@ -69,10 +70,10 @@ const styles = StyleSheet.create({
   dow: { width: `${100 / 7}%`, textAlign: 'center', fontSize: 12, fontWeight: '700', color: colors.textMuted, paddingVertical: 6 },
   cell: { width: `${100 / 7}%`, aspectRatio: 1, padding: 2 },
   dayBox: { flex: 1, borderRadius: 999, alignItems: 'center', justifyContent: 'center' },
-  inRange: { backgroundColor: '#E3ECF6', borderRadius: 8 },
+  inRange: { backgroundColor: colors.rangeBg, borderRadius: 8 },
   start: { backgroundColor: colors.blue },
   end: { backgroundColor: colors.orange },
   dayText: { fontSize: 15, color: colors.navy, fontWeight: '500' },
-  past: { color: '#B8C3CF' },
+  past: { color: colors.faint },
   selText: { color: colors.white, fontWeight: '800' },
-});
+}));

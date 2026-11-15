@@ -2,9 +2,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 
 import { useFriends } from '@/lib/friends';
-import { colors } from '@/lib/theme';
+import { useColors } from '@/lib/theme';
 
 export default function TabsLayout() {
+  const colors = useColors();
   const { data } = useFriends();
   const pending = data.incoming.length;
   return (

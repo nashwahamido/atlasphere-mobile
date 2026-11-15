@@ -1,8 +1,9 @@
 import { StyleSheet, Text, View } from 'react-native';
 
-import { colors } from '@/lib/theme';
+import { useColors } from '@/lib/theme';
 
 export function Banner({ kind, message }: { kind: 'error' | 'success'; message?: string | null }) {
+  const colors = useColors();
   if (!message) return null;
   const error = kind === 'error';
   return (

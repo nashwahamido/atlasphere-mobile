@@ -1,13 +1,14 @@
 import { router } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import type { Person, Relationship } from '@/lib/api';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius } from '@/lib/theme';
 
 import { Avatar } from './Avatar';
 import { FriendActions } from './FriendActions';
 
 export function PersonRow({ person, state }: { person: Person; state: Relationship }) {
+  const styles = useStyles();
   return (
     <View style={styles.row}>
       <Pressable
@@ -23,11 +24,11 @@ export function PersonRow({ person, state }: { person: Person; state: Relationsh
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, flexWrap: 'wrap',
     padding: 12, borderRadius: radius.card, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg,
   },
   person: { flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 1, minWidth: 140 },
   name: { fontSize: 16, fontWeight: '600', color: colors.navy, flexShrink: 1 },
-});
+}));

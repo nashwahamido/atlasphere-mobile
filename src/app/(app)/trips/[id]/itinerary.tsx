@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ChatButton } from '@/components/ChatButton';
@@ -13,7 +13,7 @@ import { confirmAction } from '@/lib/confirm';
 import { useSession } from '@/lib/session';
 import { getSocket } from '@/lib/socket';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 import { addDays, busyText, dayLabel, daysBetween, shortDate, temp, weatherIcon } from '@/lib/weather';
 
 const ROW = 56;
@@ -23,6 +23,8 @@ const hourLabel = (slot: string) => slot.replace('.', ':');
 type Editing = { mode: 'new' | 'edit'; dayIndex: number; timeSlot: string; name: string; color: string; duration: number; from?: { dayIndex: number; timeSlot: string } };
 
 export default function ItineraryScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { token, user } = useSession();
   const { call } = useTrips();
@@ -284,6 +286,8 @@ function BlockSheet({ tripId, editing, hours, dayBlocks, picks, myId, onClose, o
   tripId: string; editing: Editing; hours: string[]; dayBlocks: Block[]; picks: SavedActivity[]; myId?: number;
   onClose: () => void; onSaved: () => void;
 }) {
+  const styles = useStyles();
+  const colors = useColors();
   const { call } = useTrips();
   const [e, setE] = useState(editing);
   const [busy, setBusy] = useState(false);
@@ -418,7 +422,7 @@ function BlockSheet({ tripId, editing, hours, dayBlocks, picks, myId, onClose, o
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   content: { padding: 18, paddingBottom: 40, gap: 12, width: '100%', maxWidth: 560, alignSelf: 'center' },
@@ -442,11 +446,11 @@ const styles = StyleSheet.create({
   dayTitle: { fontSize: 16, fontWeight: '800', color: colors.navy },
   cityRow: { gap: 6 },
   cityChip: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg },
-  cityChipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  cityChipOn: { backgroundColor: colors.navyFill, borderColor: colors.navyFill },
   cityText: { fontSize: 13, fontWeight: '700', color: colors.navy },
   hintText: { fontSize: 14, color: colors.text },
-  holiday: { color: '#7e22ce', fontWeight: '700' },
-  warn: { color: '#92400e', fontWeight: '700' },
+  holiday: { color: colors.holidayText, fontWeight: '700' },
+  warn: { color: colors.warnText, fontWeight: '700' },
   schedule: { borderTopWidth: 1, borderTopColor: colors.border },
   slotRow: { flexDirection: 'row', borderBottomWidth: 1, borderBottomColor: colors.border, alignItems: 'stretch' },
   slotTime: { width: 54, paddingTop: 6, fontSize: 13, color: colors.textMuted, fontWeight: '600' },
@@ -465,7 +469,7 @@ const styles = StyleSheet.create({
   input: { backgroundColor: colors.field, borderWidth: 1, borderColor: colors.border, borderRadius: radius.field, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: colors.text },
   pickRow: { gap: 8 },
   pickChip: { maxWidth: 240, paddingVertical: 8, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg },
-  pickChipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  pickChipOn: { backgroundColor: colors.navyFill, borderColor: colors.navyFill },
   pickText: { fontSize: 14, fontWeight: '600', color: colors.navy },
   hourGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
   hourChip: { width: 64, paddingVertical: 8, borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg },
@@ -482,4 +486,4 @@ const styles = StyleSheet.create({
   noteAuthor: { fontSize: 12, fontWeight: '800', color: colors.textMuted },
   noteText: { fontSize: 15, color: colors.text, marginTop: 2 },
   noteRow: { flexDirection: 'row', gap: 8, alignItems: 'center' },
-});
+}));

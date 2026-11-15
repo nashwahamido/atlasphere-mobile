@@ -13,7 +13,7 @@ import { api } from '@/lib/api';
 import { openPage, PRIVACY_URL, TERMS_URL } from '@/lib/links';
 import { fullPhone, validateRegister, type FieldErrors } from '@/lib/validation';
 
-import { authStyles as styles } from '@/components/authStyles';
+import { useAuthStyles } from '@/components/authStyles';
 
 const GENDERS = [
   { label: 'Male', value: '1' },
@@ -22,6 +22,7 @@ const GENDERS = [
 ];
 
 export default function Register() {
+  const styles = useAuthStyles();
   const invite = usePendingInvite();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');

@@ -1,12 +1,13 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Switch, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
+import { ChoiceChips } from '@/components/ChoiceChips';
 import { api, type MyProfile } from '@/lib/api';
 import { confirmAction } from '@/lib/confirm';
 import { HELP_URL, openPage, PRIVACY_URL, TERMS_URL } from '@/lib/links';
@@ -14,10 +15,13 @@ import { pickPhotoForm } from '@/lib/photo';
 import { disablePush, enablePush, openPhoneSettings, pushStatus, type PushStatus } from '@/lib/push';
 import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, type ThemePreference, useColors, useTheme } from '@/lib/theme';
 
 export default function ProfileTab() {
+  const styles = useStyles();
+  const colors = useColors();
   const { token, user, signOut, updateUser } = useSession();
+  const { preference, setPreference } = useTheme();
   const { call } = useTrips();
   const [profile, setProfile] = useState<MyProfile | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
@@ -120,6 +124,15 @@ export default function ProfileTab() {
           {profile?.visitedCities.length ? <Text style={styles.muted}>{profile.visitedCities.join(' · ')}</Text> : null}
         </View>
 
+        <View style={styles.card}>
+          <ChoiceChips
+            label="Appearance"
+            options={[{ label: 'Same as phone', value: 'system' }, { label: 'Light', value: 'light' }, { label: 'Dark', value: 'dark' }]}
+            value={preference}
+            onChange={(v) => setPreference((v || 'system') as ThemePreference)}
+          />
+        </View>
+
         {push && push !== 'unsupported' ? (
           <View style={styles.card}>
             <View style={styles.rowBetween}>
@@ -154,6 +167,8 @@ export default function ProfileTab() {
 }
 
 function Row({ icon, label, onPress, last }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void; last?: boolean }) {
+  const styles = useStyles();
+  const colors = useColors();
   return (
     <Pressable accessibilityRole="button" onPress={onPress} style={({ pressed }) => [styles.row, last ? null : styles.rowBorder, pressed ? { opacity: 0.6 } : null]}>
       <Ionicons name={icon} size={22} color={colors.navy} />
@@ -163,7 +178,7 @@ function Row({ icon, label, onPress, last }: { icon: keyof typeof Ionicons.glyph
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   content: { padding: 20, paddingBottom: 40, gap: 14, width: '100%', maxWidth: 520, alignSelf: 'center' },
   top: { alignItems: 'center', gap: 4, marginTop: 8 },
@@ -183,4 +198,4 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 14, paddingHorizontal: 16, backgroundColor: colors.bg },
   rowBorder: { borderBottomWidth: 1, borderBottomColor: colors.border },
   rowLabel: { flex: 1, fontSize: 16, color: colors.navy, fontWeight: '600' },
-});
+}));

@@ -1,6 +1,6 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Platform, RefreshControl, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Platform, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/Banner';
@@ -8,9 +8,11 @@ import { PersonRow } from '@/components/PersonRow';
 import { api, type Person } from '@/lib/api';
 import { useFriends } from '@/lib/friends';
 import { useSession } from '@/lib/session';
-import { colors } from '@/lib/theme';
+import { makeStyles, useColors } from '@/lib/theme';
 
 export default function Friends() {
+  const styles = useStyles();
+  const colors = useColors();
   const { token } = useSession();
   const { data, loading, error, refresh } = useFriends();
   const [query, setQuery] = useState('');
@@ -71,7 +73,7 @@ export default function Friends() {
             value={query}
             onChangeText={setQuery}
             placeholder="Find people by name or email"
-            placeholderTextColor="#8A99A8"
+            placeholderTextColor={colors.placeholder}
             autoCapitalize="none"
             autoCorrect={false}
             returnKeyType="search"
@@ -118,6 +120,7 @@ export default function Friends() {
 }
 
 function Section({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.section}>
       <View style={styles.sectionHead}>
@@ -129,7 +132,7 @@ function Section({ title, count, children }: { title: string; count?: number; ch
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   content: { padding: 20, paddingBottom: 40, width: '100%', maxWidth: 560, alignSelf: 'center' },
   title: { fontSize: 30, fontWeight: '800', color: colors.navy, marginBottom: 16 },
@@ -145,4 +148,4 @@ const styles = StyleSheet.create({
   count: { fontSize: 12, fontWeight: '700', color: colors.textMuted, backgroundColor: colors.field, borderRadius: 999, paddingHorizontal: 9, paddingVertical: 2, overflow: 'hidden' },
   list: { gap: 8 },
   empty: { fontSize: 15, lineHeight: 22, color: colors.textMuted },
-});
+}));

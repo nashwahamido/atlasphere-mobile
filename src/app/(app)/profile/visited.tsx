@@ -1,16 +1,18 @@
 import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { api, type CountryOption } from '@/lib/api';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 // Countries you've been to, then cities in them. Friends see these.
 export default function Visited() {
+  const styles = useStyles();
+  const colors = useColors();
   const { call } = useTrips();
   const [all, setAll] = useState<CountryOption[] | null>(null);
   const [codes, setCodes] = useState<string[]>([]);
@@ -98,7 +100,7 @@ export default function Visited() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   content: { padding: 20, paddingBottom: 40, gap: 10, width: '100%', maxWidth: 560, alignSelf: 'center' },
@@ -112,7 +114,7 @@ const styles = StyleSheet.create({
   country: { fontSize: 17, fontWeight: '800', color: colors.navy },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingVertical: 7, paddingHorizontal: 12, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.field },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  chipOn: { backgroundColor: colors.navyFill, borderColor: colors.navyFill },
   chipText: { fontSize: 14, color: colors.navy, fontWeight: '500' },
   chipTextOn: { color: colors.white },
-});
+}));

@@ -5,7 +5,7 @@ The Atlasphere app for iPhone and Android, built with React Native and [Expo](ht
 
 It uses the same accounts, groups and data as the website ([AtlasphereWebApp-Updated](https://github.com/nashwahamido/AtlasphereWebApp-Updated)). The app talks to the website's server through its `/api/mobile` endpoints.
 
-## What's in this version (0.7)
+## What's in this version (0.8)
 
 Everything the website has, on your phone, with the same account and data:
 
@@ -18,6 +18,7 @@ Everything the website has, on your phone, with the same account and data:
 - **Friends**: find people, requests, profiles
 - **Profile**: photo, places you’ve been, notifications, Help/Privacy/Terms, log out, delete account
 - **Invites**: a new trip puts “Invite your group” first (share link, copy, invite by email); friends show up as they join; invite links opened while signed out open the trip after you sign in
+- **Dark mode**: follows the phone, or pick Light or Dark in Profile → Appearance
 - **Chat everywhere**: a chat button on Recommendations, Itinerary and Destination shows new messages as they arrive; the notifications bell is on every trip screen
 - **Push notifications**: new chat messages, votes, people joining your trips and friend requests; tapping one opens the right screen; on/off switch in Profile
 

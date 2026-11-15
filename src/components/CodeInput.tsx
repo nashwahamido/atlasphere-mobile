@@ -1,11 +1,12 @@
 import { useRef, type ComponentRef } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, TextInput, View } from 'react-native';
 
-import { colors } from '@/lib/theme';
+import { makeStyles } from '@/lib/theme';
 
 // Six boxes backed by one hidden input, so paste and iOS/Android one-time-code
 // autofill fill all six at once.
 export function CodeInput({ value, onChange, error }: { value: string; onChange: (v: string) => void; error?: boolean }) {
+  const styles = useStyles();
   const ref = useRef<ComponentRef<typeof TextInput>>(null);
   const digits = value.split('');
   return (
@@ -35,7 +36,7 @@ export function CodeInput({ value, onChange, error }: { value: string; onChange:
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   row: { flexDirection: 'row', justifyContent: 'space-between', gap: 8, marginBottom: 20 },
   box: {
     flex: 1, maxWidth: 56, aspectRatio: 0.85, borderRadius: 12, borderWidth: 1.5,
@@ -45,4 +46,4 @@ const styles = StyleSheet.create({
   error: { borderColor: colors.error },
   digit: { fontSize: 24, fontWeight: '700', color: colors.navy },
   hidden: { position: 'absolute', opacity: 0, width: '100%', height: '100%' },
-});
+}));

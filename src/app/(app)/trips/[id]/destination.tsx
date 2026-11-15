@@ -1,6 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ChatButton } from '@/components/ChatButton';
@@ -8,11 +8,13 @@ import { Banner } from '@/components/Banner';
 import { CrowdMap } from '@/components/CrowdMap';
 import { api, type DestinationDay, type DestinationInfo, type PlacesInfo } from '@/lib/api';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 import { busyText, dayLabel, localTime, shortDate, temp, weatherIcon, weatherLabel } from '@/lib/weather';
 
 // Weather, local time, holidays, closures and estimated crowds, per city.
 export default function DestinationScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { call, trips } = useTrips();
   const tripCities = trips.find((t) => t.id === id)?.cities || [];
@@ -205,7 +207,7 @@ export default function DestinationScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   content: { padding: 16, paddingBottom: 40, gap: 12, width: '100%', maxWidth: 600, alignSelf: 'center' },
@@ -231,24 +233,24 @@ const styles = StyleSheet.create({
   estimate: { fontSize: 11, fontWeight: '700', color: colors.textMuted, borderWidth: 1, borderColor: colors.border, borderRadius: 999, paddingHorizontal: 8, paddingVertical: 3, overflow: 'hidden' },
   days: { gap: 8 },
   dayCard: { width: 104, alignItems: 'center', gap: 3, padding: 10, borderRadius: 14, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg },
-  dayCardOn: { borderColor: colors.orange, backgroundColor: '#FDF1E4' },
+  dayCardOn: { borderColor: colors.orange, backgroundColor: colors.highlightBg },
   dayDate: { fontSize: 12, fontWeight: '700', color: colors.navy },
   dayIcon: { fontSize: 24 },
   dayTemps: { fontSize: 13, color: colors.textMuted },
   daySrc: { fontSize: 10, color: colors.textMuted, textTransform: 'uppercase', letterSpacing: 0.4, textAlign: 'center' },
   badge: { fontSize: 10, fontWeight: '700', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 999, overflow: 'hidden' },
-  badgeHoliday: { backgroundColor: '#F3E8FF', color: '#7e22ce' },
-  badgeBusy: { backgroundColor: '#FEF3C7', color: '#a16207' },
-  badgeHot: { backgroundColor: '#FEE2E2', color: '#b91c1c' },
-  badgeClosed: { backgroundColor: '#E5E7EB', color: '#4b5563' },
-  alert: { fontSize: 13, backgroundColor: '#F3E8FF', color: '#581c87', padding: 10, borderRadius: 10, lineHeight: 18 },
+  badgeHoliday: { backgroundColor: colors.holidayBg, color: colors.holidayText },
+  badgeBusy: { backgroundColor: colors.busyBg, color: colors.busyText },
+  badgeHot: { backgroundColor: colors.hotBg, color: colors.hotText },
+  badgeClosed: { backgroundColor: colors.closedBg, color: colors.closedText },
+  alert: { fontSize: 13, backgroundColor: colors.holidayBg, color: colors.holidayStrong, padding: 10, borderRadius: 10, lineHeight: 18 },
   legend: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   legendBar: { flexDirection: 'row', width: 80, height: 8, borderRadius: 4, overflow: 'hidden' },
-  closedDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#4b5563', marginLeft: 10 },
+  closedDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.closedText, marginLeft: 10 },
   item: { backgroundColor: colors.bg, borderRadius: 10, padding: 10, fontSize: 15, color: colors.text },
   itemText: { fontSize: 15, color: colors.text },
   hours: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   holidayRow: { flexDirection: 'row', gap: 12, backgroundColor: colors.bg, borderRadius: 10, padding: 10, alignItems: 'center' },
-  holidayDate: { fontSize: 14, fontWeight: '800', color: '#7e22ce', width: 90 },
+  holidayDate: { fontSize: 14, fontWeight: '800', color: colors.holidayText, width: 90 },
   credits: { fontSize: 11, color: colors.textMuted, textAlign: 'center' },
-});
+}));

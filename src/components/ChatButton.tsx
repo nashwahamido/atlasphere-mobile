@@ -1,19 +1,22 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useSession } from '@/lib/session';
 import { getSocket } from '@/lib/socket';
-import { colors } from '@/lib/theme';
+import { makeStyles, useColors } from '@/lib/theme';
 
 type Incoming = { groupId?: string | number; userId?: string | number; userName?: string; text?: string; system?: boolean };
 
 // The trip chat from any trip screen (like the chat panel next to every tab
 // on the website): a round button in the corner that counts new messages
 // and shows the latest one for a moment.
-export function ChatButton({ tripId }: { tripId: string }) {
+// `raised` lifts it above a row of buttons at the bottom of the screen.
+export function ChatButton({ tripId, raised }: { tripId: string; raised?: boolean }) {
+  const styles = useStyles();
+  const colors = useColors();
   const { token, user } = useSession();
   const insets = useSafeAreaInsets();
   const [unread, setUnread] = useState(0);
@@ -48,7 +51,7 @@ export function ChatButton({ tripId }: { tripId: string }) {
   };
 
   return (
-    <View style={[styles.wrap, { bottom: insets.bottom + 18 }]} pointerEvents="box-none">
+    <View style={[styles.wrap, { bottom: insets.bottom + (raised ? 112 : 18) }]} pointerEvents="box-none">
       {preview ? (
         <Pressable onPress={open} style={styles.preview} accessibilityRole="button" accessibilityLabel={`New message. ${preview}. Open chat`}>
           <Text style={styles.previewText} numberOfLines={2}>{preview}</Text>
@@ -63,14 +66,14 @@ export function ChatButton({ tripId }: { tripId: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { position: 'absolute', right: 18, alignItems: 'flex-end', gap: 8, maxWidth: '80%' },
   fab: { width: 58, height: 58, borderRadius: 29, backgroundColor: colors.orange, alignItems: 'center', justifyContent: 'center',
     shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
-  badge: { position: 'absolute', top: -2, right: -2, minWidth: 22, height: 22, borderRadius: 11, backgroundColor: colors.navy,
-    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5, borderWidth: 2, borderColor: colors.white },
+  badge: { position: 'absolute', top: -2, right: -2, minWidth: 22, height: 22, borderRadius: 11, backgroundColor: colors.navyFill,
+    alignItems: 'center', justifyContent: 'center', paddingHorizontal: 5, borderWidth: 2, borderColor: colors.bg },
   badgeText: { color: colors.white, fontSize: 11, fontWeight: '800' },
-  preview: { backgroundColor: colors.navy, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 14,
+  preview: { backgroundColor: colors.navyFill, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 14,
     shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 8, shadowOffset: { width: 0, height: 3 }, elevation: 6 },
   previewText: { color: colors.white, fontSize: 14 },
-});
+}));

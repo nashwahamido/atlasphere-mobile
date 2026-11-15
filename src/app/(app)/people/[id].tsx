@@ -1,6 +1,6 @@
 import { Stack, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, ScrollView, Text, View } from 'react-native';
 
 import { Avatar } from '@/components/Avatar';
 import { Banner } from '@/components/Banner';
@@ -8,9 +8,11 @@ import { FriendActions } from '@/components/FriendActions';
 import { api, ApiError, type Country, type Profile } from '@/lib/api';
 import { flagEmoji } from '@/lib/flags';
 import { useSession } from '@/lib/session';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 export default function PersonScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { token, signOut } = useSession();
   const [person, setPerson] = useState<Profile | null>(null);
@@ -97,6 +99,7 @@ export default function PersonScreen() {
 }
 
 function Stat({ n, label }: { n: number; label: string }) {
+  const styles = useStyles();
   return (
     <View style={styles.stat}>
       <Text style={styles.statNum}>{n}</Text>
@@ -106,6 +109,7 @@ function Stat({ n, label }: { n: number; label: string }) {
 }
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
+  const styles = useStyles();
   return (
     <View style={styles.card}>
       <Text style={styles.cardTitle}>{title}</Text>
@@ -115,6 +119,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
 }
 
 function Countries({ list, empty }: { list?: Country[]; empty: string }) {
+  const styles = useStyles();
   if (!list || list.length === 0) return <Text style={styles.empty}>{empty}</Text>;
   return (
     <View style={styles.chips}>
@@ -128,7 +133,7 @@ function Countries({ list, empty }: { list?: Country[]; empty: string }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24, backgroundColor: colors.bg },
   content: { padding: 20, paddingBottom: 40, width: '100%', maxWidth: 560, alignSelf: 'center' },
   head: { alignItems: 'center', marginBottom: 24, gap: 6 },
@@ -150,4 +155,4 @@ const styles = StyleSheet.create({
   empty: { fontSize: 14, color: colors.textMuted },
   locked: { alignItems: 'center' },
   lockedText: { fontSize: 15, lineHeight: 22, color: colors.textMuted, textAlign: 'center' },
-});
+}));

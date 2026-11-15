@@ -14,7 +14,7 @@ import { pickPhotoForm } from '@/lib/photo';
 import { useFriends } from '@/lib/friends';
 import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 const INTERESTS = ['Relax', 'Nightlife', 'Active', 'Culture', 'Nature', 'Food', 'Shopping', 'Entertainment', 'Family', 'Fun', 'Sightseeing'];
 
@@ -24,6 +24,8 @@ function niceDate(iso: string) {
 }
 
 export default function TripScreen() {
+  const styles = useStyles();
+  const colors = useColors();
   const { id, created } = useLocalSearchParams<{ id: string; created?: string }>();
   const { user } = useSession();
   const { call, upsert, drop } = useTrips();
@@ -310,7 +312,7 @@ export default function TripScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 22 },
   content: { padding: 20, paddingBottom: 48, gap: 14, width: '100%', maxWidth: 560, alignSelf: 'center' },
@@ -341,9 +343,9 @@ const styles = StyleSheet.create({
   addBtn: { minHeight: 40, paddingHorizontal: 18 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingVertical: 8, paddingHorizontal: 13, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  chipOn: { backgroundColor: colors.navyFill, borderColor: colors.navyFill },
   chipText: { fontSize: 14, color: colors.navy, fontWeight: '500' },
   chipTextOn: { color: colors.white },
   renameBox: { gap: 10 },
   input: { backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.border, borderRadius: radius.field, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: colors.text },
-});
+}));

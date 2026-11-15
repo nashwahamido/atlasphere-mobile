@@ -1,21 +1,42 @@
-import { router, SplashScreen, Stack } from 'expo-router';
+import { DarkTheme, DefaultTheme, router, SplashScreen, Stack, ThemeProvider as NavigationTheme } from 'expo-router';
 import { useEffect, useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { takePendingInvite } from '@/lib/pendingInvite';
 import { SessionProvider, useSession } from '@/lib/session';
+import { ThemeProvider, useTheme } from '@/lib/theme';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   return (
     <SafeAreaProvider>
-      <SessionProvider>
-        <RootNavigator />
-        <StatusBar style="auto" />
-      </SessionProvider>
+      <ThemeProvider>
+        <SessionProvider>
+          <Themed>
+            <RootNavigator />
+          </Themed>
+        </SessionProvider>
+      </ThemeProvider>
     </SafeAreaProvider>
+  );
+}
+
+// Light or dark for the navigation (screen backgrounds, headers) and the
+// status bar, matching the app's colours.
+function Themed({ children }: { children: React.ReactNode }) {
+  const { colors, scheme } = useTheme();
+  const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
+  const navTheme = {
+    ...base,
+    colors: { ...base.colors, primary: colors.orange, background: colors.bg, card: colors.bg, text: colors.navy, border: colors.border },
+  };
+  return (
+    <NavigationTheme value={navTheme}>
+      {children}
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
+    </NavigationTheme>
   );
 }
 

@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/Banner';
@@ -10,9 +10,11 @@ import { TripCard } from '@/components/TripCard';
 import { api } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
-import { colors } from '@/lib/theme';
+import { makeStyles, useColors } from '@/lib/theme';
 
 export default function TripsTab() {
+  const styles = useStyles();
+  const colors = useColors();
   const { trips, loading, error, refresh, call } = useTrips();
   const { user } = useSession();
   const [refreshing, setRefreshing] = useState(false);
@@ -72,7 +74,7 @@ export default function TripsTab() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   list: { padding: 20, paddingBottom: 40, width: '100%', maxWidth: 560, alignSelf: 'center' },
@@ -87,4 +89,4 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', paddingVertical: 40, gap: 8 },
   emptyTitle: { fontSize: 18, fontWeight: '700', color: colors.navy },
   emptyText: { fontSize: 15, color: colors.textMuted, textAlign: 'center', lineHeight: 22, maxWidth: 320 },
-});
+}));

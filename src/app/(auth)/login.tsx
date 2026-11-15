@@ -10,9 +10,10 @@ import { TextField } from '@/components/TextField';
 import { api, ApiError } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { validateLogin, type FieldErrors } from '@/lib/validation';
-import { authStyles as styles } from '@/components/authStyles';
+import { useAuthStyles } from '@/components/authStyles';
 
 export default function Login() {
+  const styles = useAuthStyles();
   const invite = usePendingInvite();
   const { signIn } = useSession();
   const [email, setEmail] = useState('');

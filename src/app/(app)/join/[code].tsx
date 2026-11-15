@@ -7,10 +7,11 @@ import { Button } from '@/components/Button';
 import { api } from '@/lib/api';
 import { setPendingInvite } from '@/lib/pendingInvite';
 import { useTrips } from '@/lib/trips';
-import { colors } from '@/lib/theme';
+import { useColors } from '@/lib/theme';
 
 // Opened from an atlasphere://join/<code> link: join, then show the trip.
 export default function JoinFromLink() {
+  const colors = useColors();
   const { code } = useLocalSearchParams<{ code: string }>();
   const { call, upsert } = useTrips();
   const [error, setError] = useState<string | null>(null);

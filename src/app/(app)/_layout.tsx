@@ -4,9 +4,10 @@ import { NotificationBell } from '@/components/NotificationBell';
 import { PushSetup } from '@/components/PushSetup';
 import { FriendsProvider } from '@/lib/friends';
 import { TripsProvider } from '@/lib/trips';
-import { colors } from '@/lib/theme';
+import { useColors } from '@/lib/theme';
 
 export default function AppLayout() {
+  const colors = useColors();
   return (
     <FriendsProvider>
       <TripsProvider>
