@@ -1,5 +1,6 @@
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
+import { Platform } from 'react-native';
 
 import { notify } from './confirm';
 
@@ -10,10 +11,14 @@ export type PhotoUpload = { photoBase64: string };
 
 // Let the person pick a photo. Returns null if they cancel or don't allow access.
 export async function pickPhotoForm(aspect: [number, number]): Promise<PhotoUpload | null> {
-  const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-  if (!perm.granted) {
-    notify('Photos access needed', 'Allow Atlasphere to use your photos in Settings to add a picture.');
-    return null;
+  // iPhone asks for photo access. Android uses the system photo picker,
+  // which needs no permission (and the app doesn't declare any).
+  if (Platform.OS === 'ios') {
+    const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!perm.granted) {
+      notify('Photos access needed', 'Allow Atlasphere to use your photos in Settings to add a picture.');
+      return null;
+    }
   }
   const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect, quality: 1 });
   if (picked.canceled || !picked.assets?.length) return null;

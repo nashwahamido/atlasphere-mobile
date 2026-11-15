@@ -39,3 +39,8 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Secret keys: never commit (google-services.json itself is fine to commit)
+play-service-account.json
+*service-account*.json
+*firebase-adminsdk*.json

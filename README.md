@@ -5,7 +5,7 @@ The Atlasphere app for iPhone and Android, built with React Native and [Expo](ht
 
 It uses the same accounts, groups and data as the website ([AtlasphereWebApp-Updated](https://github.com/nashwahamido/AtlasphereWebApp-Updated)). The app talks to the website's server through its `/api/mobile` endpoints.
 
-## What's in this version (0.9)
+## What's in this version (1.0)
 
 Everything the website has, on your phone, with the same account and data:
 
@@ -91,4 +91,12 @@ tests/                 Unit tests
 
 ## Building for the App Store / Google Play
 
-Store builds use [EAS Build](https://docs.expo.dev/build/introduction/). You'll need an Expo account plus an Apple Developer account (iOS) and/or a Google Play developer account (Android). The bundle identifier and package name are set to `app.atlasphere.mobile` in `app.json`; change them before the first store build if you want something else.
+Store builds use [EAS Build](https://docs.expo.dev/build/introduction/) with the profiles in `eas.json`:
+
+- `eas build -p android --profile preview`: an APK to install on an Android phone for testing
+- `eas build -p android --profile production`: the `.aab` for Google Play (version code goes up automatically)
+- `development`: a development build (like Expo Go, but with this app's native setup)
+
+**Google Play, step by step:** see [PLAY_STORE.md](PLAY_STORE.md). Store graphics and screenshots are in `store/`.
+
+The package name is `app.atlasphere.mobile`. Android push needs `google-services.json` in this folder (see PLAY_STORE.md); `app.config.js` adds it when present.
