@@ -1,26 +1,33 @@
+import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
-import { Platform } from 'react-native';
 
 import { notify } from './confirm';
 
-// Let the person pick a photo and package it for upload (field "photo").
-// Returns null if they cancel or don't allow access.
-export async function pickPhotoForm(aspect: [number, number]): Promise<FormData | null> {
+// A picked photo, ready to send: a JPEG (at most 1600 px wide) as base64.
+// Sent as JSON because Expo's fetch can't send React Native's { uri } form
+// uploads.
+export type PhotoUpload = { photoBase64: string };
+
+// Let the person pick a photo. Returns null if they cancel or don't allow access.
+export async function pickPhotoForm(aspect: [number, number]): Promise<PhotoUpload | null> {
   const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
   if (!perm.granted) {
     notify('Photos access needed', 'Allow Atlasphere to use your photos in Settings to add a picture.');
     return null;
   }
-  const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect, quality: 0.8 });
+  const picked = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], allowsEditing: true, aspect, quality: 1 });
   if (picked.canceled || !picked.assets?.length) return null;
   const asset = picked.assets[0];
-  const form = new FormData();
-  if (Platform.OS === 'web') {
-    const blob = await (await fetch(asset.uri)).blob();
-    form.append('photo', blob, asset.fileName || 'photo.jpg');
-  } else {
-    // React Native's FormData takes { uri, name, type } for files.
-    form.append('photo', { uri: asset.uri, name: asset.fileName || 'photo.jpg', type: asset.mimeType || 'image/jpeg' } as unknown as Blob);
+  try {
+    const ctx = ImageManipulator.manipulate(asset.uri);
+    if ((asset.width || 0) > 1600) ctx.resize({ width: 1600 });
+    const image = await ctx.renderAsync();
+    const saved = await image.saveAsync({ compress: 0.75, format: SaveFormat.JPEG, base64: true });
+    if (!saved.base64) throw new Error('no image data');
+    return { photoBase64: saved.base64 };
+  } catch (e) {
+    console.warn('Photo preparation failed:', e);
+    notify('Couldn’t use that photo', 'Please try a different one.');
+    return null;
   }
-  return form;
 }

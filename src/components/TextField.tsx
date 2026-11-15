@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { Pressable, StyleSheet, Text, TextInput, View, type TextInputProps, Platform } from 'react-native';
+import { Pressable, Text, TextInput, View, type TextInputProps, Platform } from 'react-native';
 
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useTheme } from '@/lib/theme';
 
 // Browsers draw their own focus ring around inputs; the field box already shows focus.
 const noWebOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : {};
@@ -9,6 +9,8 @@ const noWebOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object
 type Props = TextInputProps & { label: string; error?: string; secureToggle?: boolean };
 
 export function TextField({ label, error, secureToggle, style, ...input }: Props) {
+  const styles = useStyles();
+  const { colors, scheme } = useTheme();
   const [hidden, setHidden] = useState(true);
   return (
     <View style={styles.wrap}>
@@ -16,7 +18,8 @@ export function TextField({ label, error, secureToggle, style, ...input }: Props
       <View style={[styles.box, error ? styles.boxError : null]}>
         <TextInput
           accessibilityLabel={label}
-          placeholderTextColor="#8A99A8"
+          placeholderTextColor={colors.placeholder}
+          keyboardAppearance={scheme}
           style={[styles.input, style]}
           secureTextEntry={secureToggle ? hidden : input.secureTextEntry}
           {...input}
@@ -32,7 +35,7 @@ export function TextField({ label, error, secureToggle, style, ...input }: Props
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 6 },
   box: {
@@ -43,4 +46,4 @@ const styles = StyleSheet.create({
   input: { flex: 1, minHeight: 50, fontSize: 16, color: colors.text, ...noWebOutline },
   toggle: { color: colors.blue, fontWeight: '600', fontSize: 14, paddingLeft: 10 },
   error: { color: colors.error, fontSize: 13, marginTop: 6 },
-});
+}));

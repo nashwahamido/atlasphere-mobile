@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Platform, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,13 +8,14 @@ import { Avatar } from '@/components/Avatar';
 import { TripTiles } from '@/components/TripTiles';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
+import { useTripId } from '@/lib/tripId';
 import { absoluteUrl, api, type Trip } from '@/lib/api';
 import { confirmAction } from '@/lib/confirm';
 import { pickPhotoForm } from '@/lib/photo';
 import { useFriends } from '@/lib/friends';
 import { useSession } from '@/lib/session';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 const INTERESTS = ['Relax', 'Nightlife', 'Active', 'Culture', 'Nature', 'Food', 'Shopping', 'Entertainment', 'Family', 'Fun', 'Sightseeing'];
 
@@ -24,7 +25,10 @@ function niceDate(iso: string) {
 }
 
 export default function TripScreen() {
-  const { id, created } = useLocalSearchParams<{ id: string; created?: string }>();
+  const styles = useStyles();
+  const colors = useColors();
+  const { created } = useLocalSearchParams<{ created?: string }>();
+  const id = useTripId();
   const { user } = useSession();
   const { call, upsert, drop } = useTrips();
   const { data: friendsData } = useFriends();
@@ -171,8 +175,7 @@ export default function TripScreen() {
 
   if (!trip) {
     return (
-      <SafeAreaView style={styles.safe} edges={['bottom']}>
-        <Stack.Screen options={{ title: '' }} />
+      <SafeAreaView style={styles.safe} edges={[]}>
         <View style={styles.center}>{error ? <Banner kind="error" message={error} /> : <ActivityIndicator color={colors.navy} />}</View>
       </SafeAreaView>
     );
@@ -202,8 +205,7 @@ export default function TripScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <Stack.Screen options={{ title: trip.name }} />
+    <SafeAreaView style={styles.safe} edges={[]}>
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} tintColor={colors.navy} />}>
@@ -222,9 +224,9 @@ export default function TripScreen() {
         {notice ? <Banner kind="success" message={notice} /> : null}
         {error ? <Banner kind="error" message={error} /> : null}
 
-        {alone ? inviteCard : null}
-
         <TripTiles tripId={trip.id} />
+
+        {alone ? inviteCard : null}
 
         <View style={styles.facts}>
           <Text style={styles.fact}>📍 {trip.cities.join(' → ')}</Text>
@@ -310,7 +312,7 @@ export default function TripScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 22 },
   content: { padding: 20, paddingBottom: 48, gap: 14, width: '100%', maxWidth: 560, alignSelf: 'center' },
@@ -341,9 +343,9 @@ const styles = StyleSheet.create({
   addBtn: { minHeight: 40, paddingHorizontal: 18 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   chip: { paddingVertical: 8, paddingHorizontal: 13, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.bg },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  chipOn: { backgroundColor: colors.navyFill, borderColor: colors.navyFill },
   chipText: { fontSize: 14, color: colors.navy, fontWeight: '500' },
   chipTextOn: { color: colors.white },
   renameBox: { gap: 10 },
   input: { backgroundColor: colors.bg, borderWidth: 1, borderColor: colors.border, borderRadius: radius.field, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: colors.text },
-});
+}));

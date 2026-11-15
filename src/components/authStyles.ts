@@ -1,9 +1,8 @@
-import { StyleSheet } from 'react-native';
 
-import { colors } from '@/lib/theme';
+import { makeStyles } from '@/lib/theme';
 
 // Shared typography and layout for the sign-in / sign-up screens.
-export const authStyles = StyleSheet.create({
+export const useAuthStyles = makeStyles((colors) => ({
   title: { fontSize: 30, fontWeight: '800', color: colors.navy, marginBottom: 6 },
   subtitle: { fontSize: 16, color: colors.textMuted, lineHeight: 22, marginBottom: 24 },
   forgot: { alignItems: 'flex-end', marginTop: -6, marginBottom: 20 },
@@ -12,4 +11,4 @@ export const authStyles = StyleSheet.create({
   footerText: { color: colors.textMuted, fontSize: 15 },
   legal: { color: colors.textMuted, fontSize: 13, lineHeight: 19, textAlign: 'center', marginTop: 14 },
   legalLink: { color: colors.blue, fontWeight: '600' },
-});
+}));

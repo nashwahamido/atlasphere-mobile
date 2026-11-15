@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { absoluteUrl, type TripSummary } from '@/lib/api';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 export function citiesLabel(cities: string[]) {
   if (cities.length <= 1) return cities[0] || '';
@@ -11,6 +11,8 @@ export function citiesLabel(cities: string[]) {
 }
 
 export function TripCard({ trip }: { trip: TripSummary }) {
+  const styles = useStyles();
+  const colors = useColors();
   const photo = absoluteUrl(trip.photo);
   return (
     <Pressable
@@ -32,7 +34,7 @@ export function TripCard({ trip }: { trip: TripSummary }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   card: { borderRadius: radius.card, backgroundColor: colors.field, borderWidth: 1, borderColor: colors.border, overflow: 'hidden', marginBottom: 14 },
   cover: { height: 130, justifyContent: 'flex-end', padding: 12 },
   shade: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.12)' },
@@ -41,4 +43,4 @@ const styles = StyleSheet.create({
   name: { fontSize: 19, fontWeight: '800', color: colors.navy },
   meta: { fontSize: 15, color: colors.text },
   small: { fontSize: 13, color: colors.textMuted, marginTop: 2 },
-});
+}));

@@ -1,3 +1,4 @@
+import type { PhotoUpload } from './photo';
 import { API_URL } from './config';
 
 export type User = { id: number; username: string; email: string; profilePictureUrl: string };
@@ -77,23 +78,23 @@ export class ApiError extends Error {
 
 const TIMEOUT_MS = 20000;
 
-async function request<T>(path: string, options: { method?: string; body?: unknown; form?: FormData; token?: string | null } = {}): Promise<T> {
+async function request<T>(path: string, options: { method?: string; body?: unknown; token?: string | null; long?: boolean } = {}): Promise<T> {
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), options.form ? 60000 : TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), options.long ? 90000 : TIMEOUT_MS);
   let res: Response;
   try {
     res = await fetch(API_URL + '/api/mobile' + path, {
       method: options.method || 'GET',
       headers: {
         Accept: 'application/json',
-        // For uploads, fetch sets the multipart boundary itself.
-        ...(options.form ? {} : { 'Content-Type': 'application/json' }),
+        'Content-Type': 'application/json',
         ...(options.token ? { Authorization: 'Bearer ' + options.token } : {}),
       },
-      body: options.form ? options.form : options.body ? JSON.stringify(options.body) : undefined,
+      body: options.body ? JSON.stringify(options.body) : undefined,
       signal: controller.signal,
     });
-  } catch {
+  } catch (e) {
+    console.warn('Request failed:', path, e);
     throw new ApiError('Can’t reach Atlasphere. Check your connection and try again.', 0, null);
   } finally {
     clearTimeout(timer);
@@ -143,8 +144,8 @@ export const api = {
     request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/rename', { method: 'POST', body: { name }, token }),
   setTripInterests: (token: string, id: string, interests: string[]) =>
     request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/interests', { method: 'POST', body: { interests }, token }),
-  uploadTripPhoto: (token: string, id: string, form: FormData) =>
-    request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/photo', { method: 'POST', form, token }),
+  uploadTripPhoto: (token: string, id: string, photo: PhotoUpload) =>
+    request<{ trip: Trip }>('/trips/' + encodeURIComponent(id) + '/photo', { method: 'POST', body: photo, token, long: true }),
   leaveTrip: (token: string, id: string) => request<{ ok: boolean }>('/trips/' + encodeURIComponent(id) + '/leave', { method: 'POST', token }),
   deleteTrip: (token: string, id: string) => request<{ ok: boolean }>('/trips/' + encodeURIComponent(id), { method: 'DELETE', token }),
 
@@ -178,7 +179,7 @@ export const api = {
   myProfile: (token: string) => request<MyProfile>('/me/profile', { token }),
   setVisited: (token: string, countries: string[], cities: string[]) =>
     request<{ ok: boolean }>('/me/visited', { method: 'PUT', body: { countries, cities }, token }),
-  uploadMyPhoto: (token: string, form: FormData) => request<{ user: User }>('/me/photo', { method: 'POST', form, token }),
+  uploadMyPhoto: (token: string, photo: PhotoUpload) => request<{ user: User }>('/me/photo', { method: 'POST', body: photo, token, long: true }),
   savePushToken: (token: string, pushToken: string, platform: string) =>
     request<{ ok: boolean }>('/me/push-token', { method: 'POST', body: { token: pushToken, platform }, token }),
   deletePushToken: (token: string, pushToken: string) =>

@@ -1,21 +1,23 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Animated, FlatList, Image, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/Banner';
+import { useTripId } from '@/lib/tripId';
 import { absoluteUrl, api, type Recommendation, type SavedActivity, type Vote } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { getSocket } from '@/lib/socket';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 const SWIPE = 110;
 
 // Swipe right to upvote, left to dismiss, up to save for later.
 export default function Discover() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const styles = useStyles();
+  const colors = useColors();
+  const id = useTripId();
   const { token } = useSession();
   const { call } = useTrips();
   const { width } = useWindowDimensions();
@@ -125,7 +127,7 @@ export default function Discover() {
 
   if (mode === 'picks') {
     return (
-      <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <SafeAreaView style={styles.safe} edges={[]}>
         <View style={styles.top}>{Segments}</View>
         {picks === null ? <View style={styles.center}><ActivityIndicator color={colors.navy} /></View> : (
           <FlatList
@@ -151,7 +153,7 @@ export default function Discover() {
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
+    <SafeAreaView style={styles.safe} edges={[]}>
       <View style={styles.top}>
         {Segments}
         {cities.length > 1 ? (
@@ -216,6 +218,8 @@ export default function Discover() {
 }
 
 function Card({ a, onShare }: { a: Recommendation; onShare?: () => void }) {
+  const styles = useStyles();
+  const colors = useColors();
   const img = absoluteUrl(a.image);
   return (
     <View style={StyleSheet.absoluteFill}>
@@ -239,12 +243,12 @@ function Card({ a, onShare }: { a: Recommendation; onShare?: () => void }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   top: { paddingHorizontal: 20, paddingTop: 8, gap: 10, width: '100%', maxWidth: 560, alignSelf: 'center' },
   segments: { flexDirection: 'row', backgroundColor: colors.field, borderRadius: 999, padding: 4, borderWidth: 1, borderColor: colors.border },
   segment: { flex: 1, paddingVertical: 9, borderRadius: 999, alignItems: 'center' },
-  segmentOn: { backgroundColor: colors.navy },
+  segmentOn: { backgroundColor: colors.navyFill },
   segmentText: { fontSize: 15, fontWeight: '700', color: colors.navy },
   segmentTextOn: { color: colors.white },
   chips: { gap: 8, paddingRight: 8 },
@@ -260,12 +264,12 @@ const styles = StyleSheet.create({
   reload: { marginTop: 6, paddingVertical: 10, paddingHorizontal: 18, borderRadius: 999, backgroundColor: colors.field, borderWidth: 1, borderColor: colors.border },
   reloadText: { color: colors.navy, fontWeight: '700' },
   deck: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingVertical: 12 },
-  card: { position: 'absolute', top: 12, bottom: 12, borderRadius: 28, overflow: 'hidden', backgroundColor: colors.navy, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
+  card: { position: 'absolute', top: 12, bottom: 12, borderRadius: 28, overflow: 'hidden', backgroundColor: colors.navyFill, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 16, shadowOffset: { width: 0, height: 8 }, elevation: 6 },
   cardBehind: { transform: [{ scale: 0.94 }], top: 22, opacity: 0.9 },
   cardShade: { ...StyleSheet.absoluteFill, backgroundColor: 'rgba(0,0,0,0.35)' },
   shareBtn: { position: 'absolute', top: 16, right: 16, width: 42, height: 42, borderRadius: 21, backgroundColor: 'rgba(255,255,255,0.25)', alignItems: 'center', justifyContent: 'center' },
   cardTags: { position: 'absolute', top: 16, left: 16, right: 70, flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  tag: { backgroundColor: 'rgba(255,255,255,0.9)', color: colors.navy, fontWeight: '700', fontSize: 13, paddingVertical: 5, paddingHorizontal: 11, borderRadius: 999, overflow: 'hidden' },
+  tag: { backgroundColor: 'rgba(255,255,255,0.9)', color: '#0B3856', fontWeight: '700', fontSize: 13, paddingVertical: 5, paddingHorizontal: 11, borderRadius: 999, overflow: 'hidden' },
   cardBody: { position: 'absolute', left: 20, right: 20, bottom: 22, gap: 4 },
   cardCity: { color: colors.white, fontWeight: '700', fontSize: 14 },
   cardName: { color: colors.white, fontWeight: '800', fontSize: 28, lineHeight: 33 },
@@ -286,4 +290,4 @@ const styles = StyleSheet.create({
   pickImg: { width: 64, height: 64, borderRadius: 12 },
   pickName: { fontSize: 16, fontWeight: '700', color: colors.navy },
   pickMeta: { fontSize: 13, color: colors.textMuted, marginTop: 3 },
-});
+}));

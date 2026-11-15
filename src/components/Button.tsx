@@ -1,6 +1,6 @@
-import { ActivityIndicator, Pressable, StyleSheet, Text, type PressableProps } from 'react-native';
+import { ActivityIndicator, Pressable, Text, type PressableProps } from 'react-native';
 
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 type Props = Omit<PressableProps, 'children'> & {
   title: string;
@@ -9,6 +9,9 @@ type Props = Omit<PressableProps, 'children'> & {
 };
 
 export function Button({ title, variant = 'primary', loading, disabled, style, ...rest }: Props) {
+  const styles = useStyles();
+  const textStyles = useTextStyles();
+  const colors = useColors();
   const isDisabled = disabled || loading;
   return (
     <Pressable
@@ -33,7 +36,7 @@ export function Button({ title, variant = 'primary', loading, disabled, style, .
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   base: { minHeight: 52, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 24 },
   primary: { backgroundColor: colors.orange },
   secondary: { backgroundColor: colors.field, borderWidth: 1, borderColor: colors.border },
@@ -41,12 +44,12 @@ const styles = StyleSheet.create({
   link: { minHeight: 40, paddingHorizontal: 8 },
   danger: { minHeight: 40, paddingHorizontal: 8 },
   text: { fontSize: 16, fontWeight: '700' },
-});
+}));
 
-const textStyles = StyleSheet.create({
+const useTextStyles = makeStyles((colors) => ({
   primary: { color: colors.white },
   secondary: { color: colors.navy },
   outlineLight: { color: colors.white },
   link: { color: colors.blue, fontWeight: '600' },
   danger: { color: colors.error, fontWeight: '700' },
-});
+}));

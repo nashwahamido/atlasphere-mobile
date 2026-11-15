@@ -1,12 +1,12 @@
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/Banner';
 import { api, type Notification } from '@/lib/api';
 import { useTrips } from '@/lib/trips';
-import { colors } from '@/lib/theme';
+import { makeStyles, useColors } from '@/lib/theme';
 
 function ago(iso: string | null) {
   if (!iso) return '';
@@ -20,6 +20,8 @@ function ago(iso: string | null) {
 const ICON: Record<string, string> = { vote: '👍', invite: '🧳', join: '🙌', 'friend-request': '👋', 'friend-accepted': '🤝' };
 
 export default function Notifications() {
+  const styles = useStyles();
+  const colors = useColors();
   const { call } = useTrips();
   const [items, setItems] = useState<Notification[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -62,15 +64,15 @@ export default function Notifications() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 24 },
   list: { padding: 16, gap: 8, width: '100%', maxWidth: 560, alignSelf: 'center' },
   empty: { textAlign: 'center', color: colors.textMuted, marginTop: 40, lineHeight: 20 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, padding: 14, borderRadius: 14, backgroundColor: colors.field, borderWidth: 1, borderColor: colors.border },
-  unread: { backgroundColor: '#FDF1E4', borderColor: '#F5CFA4' },
+  unread: { backgroundColor: colors.highlightBg, borderColor: colors.highlightBorder },
   icon: { fontSize: 22 },
   msg: { fontSize: 15, color: colors.navy, lineHeight: 20 },
   time: { fontSize: 12, color: colors.textMuted, marginTop: 2 },
   dot: { width: 10, height: 10, borderRadius: 5, backgroundColor: colors.orange },
-});
+}));

@@ -1,19 +1,21 @@
 import { router, Stack } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { ActivityIndicator, FlatList, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { api, type CountryOption } from '@/lib/api';
 import { useTrips } from '@/lib/trips';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useColors } from '@/lib/theme';
 
 type Step = 'country' | 'cities' | 'details';
 
 // New trip in three steps, like the website: country → cities → length and
 // interests. The first city picked is the trip's main destination.
 export default function NewTrip() {
+  const styles = useStyles();
+  const colors = useColors();
   const { call, upsert } = useTrips();
   const [countries, setCountries] = useState<CountryOption[] | null>(null);
   const [interestOptions, setInterestOptions] = useState<string[]>([]);
@@ -190,7 +192,7 @@ export default function NewTrip() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 22 },
   pad: { paddingHorizontal: 20, paddingTop: 4, width: '100%', maxWidth: 560, alignSelf: 'center' },
@@ -219,8 +221,8 @@ const styles = StyleSheet.create({
   days: { fontSize: 22, fontWeight: '800', color: colors.navy, minWidth: 90, textAlign: 'center' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 8, marginBottom: 18 },
   chip: { paddingVertical: 9, paddingHorizontal: 14, borderRadius: 999, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.field },
-  chipOn: { backgroundColor: colors.navy, borderColor: colors.navy },
+  chipOn: { backgroundColor: colors.navyFill, borderColor: colors.navyFill },
   chipText: { fontSize: 15, color: colors.navy, fontWeight: '500' },
   chipTextOn: { color: colors.white },
   create: { marginTop: 4 },
-});
+}));

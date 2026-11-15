@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
@@ -8,10 +8,11 @@ import { Screen } from '@/components/Screen';
 import { TextField } from '@/components/TextField';
 import { api } from '@/lib/api';
 import { useTrips } from '@/lib/trips';
-import { colors } from '@/lib/theme';
+import { makeStyles } from '@/lib/theme';
 
 // Paste an invite link (or just its code) that someone shared.
 export default function JoinTrip() {
+  const styles = useStyles();
   const { call, upsert } = useTrips();
   const [value, setValue] = useState('');
   const [busy, setBusy] = useState(false);
@@ -43,7 +44,7 @@ export default function JoinTrip() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   title: { fontSize: 28, fontWeight: '800', color: colors.navy, marginBottom: 6 },
   text: { fontSize: 16, color: colors.textMuted, lineHeight: 22, marginBottom: 20 },
-});
+}));

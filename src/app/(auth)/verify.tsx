@@ -8,12 +8,14 @@ import { CodeInput } from '@/components/CodeInput';
 import { Screen } from '@/components/Screen';
 import { api, ApiError } from '@/lib/api';
 import { useSession } from '@/lib/session';
-import { colors } from '@/lib/theme';
+import { useColors } from '@/lib/theme';
 import { validateCode } from '@/lib/validation';
 
-import { authStyles as styles } from '@/components/authStyles';
+import { useAuthStyles } from '@/components/authStyles';
 
 export default function Verify() {
+  const styles = useAuthStyles();
+  const colors = useColors();
   const params = useLocalSearchParams<{ pendingToken: string; email: string; note?: string }>();
   const { signIn } = useSession();
   const [pendingToken, setPendingToken] = useState(params.pendingToken || '');

@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { FlatList, Modal, Pressable, StyleSheet, Text, TextInput, View, Platform } from 'react-native';
+import { FlatList, Modal, Pressable, Text, TextInput, View, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { COUNTRY_CODES } from '@/lib/countryCodes';
-import { colors, radius } from '@/lib/theme';
+import { makeStyles, radius, useTheme } from '@/lib/theme';
 
 // Browsers draw their own focus ring around inputs; the field box already shows focus.
 const noWebOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object) : {};
@@ -11,6 +11,8 @@ const noWebOutline = Platform.OS === 'web' ? ({ outlineStyle: 'none' } as object
 type Props = { countryCode: string; onCountryCode: (c: string) => void; value: string; onChange: (v: string) => void; error?: string };
 
 export function PhoneField({ countryCode, onCountryCode, value, onChange, error }: Props) {
+  const styles = useStyles();
+  const { colors, scheme } = useTheme();
   const [open, setOpen] = useState(false);
   const current = COUNTRY_CODES.find((c) => c.code === countryCode);
   return (
@@ -29,7 +31,8 @@ export function PhoneField({ countryCode, onCountryCode, value, onChange, error 
             value={value}
             onChangeText={onChange}
             placeholder="Phone number"
-            placeholderTextColor="#8A99A8"
+            placeholderTextColor={colors.placeholder}
+          keyboardAppearance={scheme}
             keyboardType="phone-pad"
             textContentType="telephoneNumber"
             autoComplete="tel"
@@ -66,7 +69,7 @@ export function PhoneField({ countryCode, onCountryCode, value, onChange, error 
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   wrap: { marginBottom: 16 },
   label: { fontSize: 14, fontWeight: '600', color: colors.text, marginBottom: 6 },
   row: { flexDirection: 'row', gap: 8 },
@@ -86,4 +89,4 @@ const styles = StyleSheet.create({
   item: { paddingVertical: 14, paddingHorizontal: 20 },
   itemOn: { backgroundColor: colors.field },
   itemText: { fontSize: 17, color: colors.text },
-});
+}));

@@ -1,16 +1,16 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { Banner } from '@/components/Banner';
+import { useTripId } from '@/lib/tripId';
 import { absoluteUrl, api, type ChatMessage } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { getSocket, useSocketConnected } from '@/lib/socket';
 import { useTrips } from '@/lib/trips';
-import { colors } from '@/lib/theme';
+import { makeStyles, useColors } from '@/lib/theme';
 
 // Recommendations shared from the website arrive as [[SHARE:image|name|description]].
 const SHARE = /^\[\[SHARE:([^|]*)\|([^|]+)\|([\s\S]*)\]\]$/;
@@ -27,16 +27,17 @@ function timeLabel(iso: string | null) {
 }
 
 export default function TripChat() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const styles = useStyles();
+  const colors = useColors();
+  const id = useTripId();
   const { token, user } = useSession();
-  const { call, trips } = useTrips();
+  const { call } = useTrips();
   const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<ChatMessage[] | null>(null);
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const online = useSocketConnected(token);
   const listRef = useRef<FlatList<ChatMessage>>(null);
-  const tripName = trips.find((t) => t.id === id)?.name || 'Chat';
 
 
   // History over HTTP, new messages live over the socket. On reconnect we
@@ -116,8 +117,7 @@ export default function TripChat() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
-      <Stack.Screen options={{ title: tripName }} />
+    <SafeAreaView style={styles.safe} edges={['left', 'right']}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 44 : 0}>
         {error ? <View style={styles.bannerWrap}><Banner kind="error" message={error} /></View> : null}
         {messages === null ? (
@@ -162,7 +162,7 @@ export default function TripChat() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((colors) => ({
   safe: { flex: 1, backgroundColor: colors.bg },
   flex: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
@@ -193,4 +193,4 @@ const styles = StyleSheet.create({
   composer: { flexDirection: 'row', alignItems: 'flex-end', gap: 8, paddingHorizontal: 12, paddingVertical: 8, borderTopWidth: 1, borderTopColor: colors.border, backgroundColor: colors.bg },
   input: { flex: 1, minHeight: 42, maxHeight: 120, backgroundColor: colors.field, borderRadius: 21, paddingHorizontal: 16, paddingTop: 11, paddingBottom: 11, fontSize: 16, color: colors.text, borderWidth: 1, borderColor: colors.border },
   send: { width: 42, height: 42, borderRadius: 21, backgroundColor: colors.orange, alignItems: 'center', justifyContent: 'center' },
-});
+}));

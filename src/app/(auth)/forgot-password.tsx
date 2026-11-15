@@ -8,9 +8,10 @@ import { TextField } from '@/components/TextField';
 import { api } from '@/lib/api';
 import { isEmail } from '@/lib/validation';
 
-import { authStyles as styles } from '@/components/authStyles';
+import { useAuthStyles } from '@/components/authStyles';
 
 export default function ForgotPassword() {
+  const styles = useAuthStyles();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | undefined>();
   const [message, setMessage] = useState<string | null>(null);
