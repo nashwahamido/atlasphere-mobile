@@ -1,11 +1,11 @@
-import { router, useLocalSearchParams } from 'expo-router';
+import { router } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ChatButton } from '@/components/ChatButton';
 import { Banner } from '@/components/Banner';
 import { CrowdMap } from '@/components/CrowdMap';
+import { useTripId } from '@/lib/tripId';
 import { api, type DestinationDay, type DestinationInfo, type PlacesInfo } from '@/lib/api';
 import { useTrips } from '@/lib/trips';
 import { makeStyles, radius, useColors } from '@/lib/theme';
@@ -15,7 +15,7 @@ import { busyText, dayLabel, localTime, shortDate, temp, weatherIcon, weatherLab
 export default function DestinationScreen() {
   const styles = useStyles();
   const colors = useColors();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const id = useTripId();
   const { call, trips } = useTrips();
   const tripCities = trips.find((t) => t.id === id)?.cities || [];
   const flag = trips.find((t) => t.id === id)?.flag || '';
@@ -88,7 +88,7 @@ export default function DestinationScreen() {
 
   if (!info) {
     return (
-      <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <SafeAreaView style={styles.safe} edges={[]}>
         <View style={styles.content}>{chips}</View>
         <View style={styles.center}>{error ? <Banner kind="error" message={error} /> : <ActivityIndicator color={colors.navy} />}</View>
       </SafeAreaView>
@@ -107,7 +107,7 @@ export default function DestinationScreen() {
   const withHours = (places?.places || []).filter((p) => p.hoursKnown).length;
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
+    <SafeAreaView style={styles.safe} edges={[]}>
       <ScrollView contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); setReload((n) => n + 1); setTimeout(() => setRefreshing(false), 800); }} tintColor={colors.navy} />}>
         {chips}
@@ -202,7 +202,6 @@ export default function DestinationScreen() {
 
         <Text style={styles.credits}>Weather: Open-Meteo and MET Norway · Holidays: Nager.Date · Places and hours: OpenStreetMap via Geoapify</Text>
       </ScrollView>
-      <ChatButton tripId={id} />
     </SafeAreaView>
   );
 }

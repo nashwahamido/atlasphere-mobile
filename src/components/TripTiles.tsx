@@ -6,7 +6,7 @@ import { makeStyles, radius, useColors } from '@/lib/theme';
 
 const TILES = [
   { key: 'chat', label: 'Chat', icon: 'chatbubbles-outline', hint: 'Talk it through' },
-  { key: 'discover', label: 'Recommendations', icon: 'heart-circle-outline', hint: 'Vote on things to do' },
+  { key: 'discover', label: 'Discover', icon: 'heart-circle-outline', hint: 'Vote on recommendations' },
   { key: 'itinerary', label: 'Itinerary', icon: 'calendar-outline', hint: 'Plan each day' },
   { key: 'destination', label: 'Destination', icon: 'partly-sunny-outline', hint: 'Weather, holidays, crowds' },
 ] as const;
@@ -22,7 +22,7 @@ export function TripTiles({ tripId }: { tripId: string }) {
           key={t.key}
           accessibilityRole="button"
           accessibilityLabel={t.label + '. ' + t.hint}
-          onPress={() => router.push({ pathname: `/trips/[id]/${t.key}`, params: { id: tripId } })}
+          onPress={() => router.navigate({ pathname: `/trips/[id]/${t.key}`, params: { id: tripId } })}
           style={({ pressed }) => [styles.tile, pressed ? { opacity: 0.8 } : null]}>
           <Ionicons name={t.icon} size={26} color={colors.orange} />
           <Text style={styles.label}>{t.label}</Text>

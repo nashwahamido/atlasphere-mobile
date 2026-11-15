@@ -1,11 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Animated, FlatList, Image, PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ChatButton } from '@/components/ChatButton';
 import { Banner } from '@/components/Banner';
+import { useTripId } from '@/lib/tripId';
 import { absoluteUrl, api, type Recommendation, type SavedActivity, type Vote } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { getSocket } from '@/lib/socket';
@@ -18,7 +17,7 @@ const SWIPE = 110;
 export default function Discover() {
   const styles = useStyles();
   const colors = useColors();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const id = useTripId();
   const { token } = useSession();
   const { call } = useTrips();
   const { width } = useWindowDimensions();
@@ -128,7 +127,7 @@ export default function Discover() {
 
   if (mode === 'picks') {
     return (
-      <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <SafeAreaView style={styles.safe} edges={[]}>
         <View style={styles.top}>{Segments}</View>
         {picks === null ? <View style={styles.center}><ActivityIndicator color={colors.navy} /></View> : (
           <FlatList
@@ -149,13 +148,12 @@ export default function Discover() {
             )}
           />
         )}
-        <ChatButton tripId={id} />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
+    <SafeAreaView style={styles.safe} edges={[]}>
       <View style={styles.top}>
         {Segments}
         {cities.length > 1 ? (
@@ -215,7 +213,6 @@ export default function Discover() {
         </View>
       ) : null}
       {current && Platform.OS !== 'web' ? <Text style={styles.hint}>Swipe right to upvote, left to dismiss, up to save</Text> : null}
-      <ChatButton tripId={id} raised />
     </SafeAreaView>
   );
 }

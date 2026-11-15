@@ -1,13 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, KeyboardAvoidingView, Modal, Platform, Pressable, RefreshControl, ScrollView, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { ChatButton } from '@/components/ChatButton';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
 import { RangeCalendar } from '@/components/RangeCalendar';
+import { useTripId } from '@/lib/tripId';
 import { api, type Block, type DestinationDay, type Itinerary, type Note, type PlacesInfo, type SavedActivity } from '@/lib/api';
 import { confirmAction } from '@/lib/confirm';
 import { useSession } from '@/lib/session';
@@ -25,7 +24,7 @@ type Editing = { mode: 'new' | 'edit'; dayIndex: number; timeSlot: string; name:
 export default function ItineraryScreen() {
   const styles = useStyles();
   const colors = useColors();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const id = useTripId();
   const { token, user } = useSession();
   const { call } = useTrips();
   const [it, setIt] = useState<Itinerary | null>(null);
@@ -147,7 +146,7 @@ export default function ItineraryScreen() {
   if (!it.dates || picking) {
     const len = range.start && range.end ? daysBetween(range.start, range.end) + 1 : 0;
     return (
-      <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <SafeAreaView style={styles.safe} edges={[]}>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.h1} accessibilityRole="header">When are you going?</Text>
           <Text style={styles.muted}>Tap the first day, then the last day of the trip. Everyone on the trip sees the same dates.</Text>
@@ -161,7 +160,6 @@ export default function ItineraryScreen() {
           <Button title="Save dates" onPress={saveDates} disabled={!range.start || !range.end} loading={savingDates} />
           {it.dates ? <Button title="Cancel" variant="link" onPress={() => setPicking(false)} /> : null}
         </ScrollView>
-        <ChatButton tripId={id} />
       </SafeAreaView>
     );
   }
@@ -174,7 +172,7 @@ export default function ItineraryScreen() {
   blocks.forEach((b) => { const s = it.hours.indexOf(b.timeSlot); for (let k = 1; k < b.duration; k++) if (it.hours[s + k]) covered.add(it.hours[s + k]); });
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
+    <SafeAreaView style={styles.safe} edges={[]}>
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} tintColor={colors.navy} />}>
@@ -276,7 +274,6 @@ export default function ItineraryScreen() {
           onSaved={async () => { setEditing(null); await load(); }}
         />
       ) : null}
-      <ChatButton tripId={id} />
     </SafeAreaView>
   );
 }

@@ -1,5 +1,5 @@
 import * as Clipboard from 'expo-clipboard';
-import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { ActivityIndicator, Image, Platform, Pressable, RefreshControl, ScrollView, Share, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,6 +8,7 @@ import { Avatar } from '@/components/Avatar';
 import { TripTiles } from '@/components/TripTiles';
 import { Banner } from '@/components/Banner';
 import { Button } from '@/components/Button';
+import { useTripId } from '@/lib/tripId';
 import { absoluteUrl, api, type Trip } from '@/lib/api';
 import { confirmAction } from '@/lib/confirm';
 import { pickPhotoForm } from '@/lib/photo';
@@ -26,7 +27,8 @@ function niceDate(iso: string) {
 export default function TripScreen() {
   const styles = useStyles();
   const colors = useColors();
-  const { id, created } = useLocalSearchParams<{ id: string; created?: string }>();
+  const { created } = useLocalSearchParams<{ created?: string }>();
+  const id = useTripId();
   const { user } = useSession();
   const { call, upsert, drop } = useTrips();
   const { data: friendsData } = useFriends();
@@ -173,8 +175,7 @@ export default function TripScreen() {
 
   if (!trip) {
     return (
-      <SafeAreaView style={styles.safe} edges={['bottom']}>
-        <Stack.Screen options={{ title: '' }} />
+      <SafeAreaView style={styles.safe} edges={[]}>
         <View style={styles.center}>{error ? <Banner kind="error" message={error} /> : <ActivityIndicator color={colors.navy} />}</View>
       </SafeAreaView>
     );
@@ -204,8 +205,7 @@ export default function TripScreen() {
   );
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <Stack.Screen options={{ title: trip.name }} />
+    <SafeAreaView style={styles.safe} edges={[]}>
       <ScrollView
         contentContainerStyle={styles.content}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={async () => { setRefreshing(true); await load(); setRefreshing(false); }} tintColor={colors.navy} />}>

@@ -1,11 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack, useLocalSearchParams } from 'expo-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { ActivityIndicator, FlatList, Image, KeyboardAvoidingView, Platform, Pressable, Text, TextInput, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Avatar } from '@/components/Avatar';
 import { Banner } from '@/components/Banner';
+import { useTripId } from '@/lib/tripId';
 import { absoluteUrl, api, type ChatMessage } from '@/lib/api';
 import { useSession } from '@/lib/session';
 import { getSocket, useSocketConnected } from '@/lib/socket';
@@ -29,16 +29,15 @@ function timeLabel(iso: string | null) {
 export default function TripChat() {
   const styles = useStyles();
   const colors = useColors();
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const id = useTripId();
   const { token, user } = useSession();
-  const { call, trips } = useTrips();
+  const { call } = useTrips();
   const insets = useSafeAreaInsets();
   const [messages, setMessages] = useState<ChatMessage[] | null>(null);
   const [text, setText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const online = useSocketConnected(token);
   const listRef = useRef<FlatList<ChatMessage>>(null);
-  const tripName = trips.find((t) => t.id === id)?.name || 'Chat';
 
 
   // History over HTTP, new messages live over the socket. On reconnect we
@@ -118,8 +117,7 @@ export default function TripChat() {
   };
 
   return (
-    <SafeAreaView style={styles.safe} edges={['bottom', 'left', 'right']}>
-      <Stack.Screen options={{ title: tripName }} />
+    <SafeAreaView style={styles.safe} edges={['left', 'right']}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined} keyboardVerticalOffset={Platform.OS === 'ios' ? insets.top + 44 : 0}>
         {error ? <View style={styles.bannerWrap}><Banner kind="error" message={error} /></View> : null}
         {messages === null ? (
